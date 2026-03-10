@@ -122,7 +122,7 @@ function WorkRow({ project, isActive, isOpen, onHover, onToggleOpen }: WorkRowPr
   return (
     <motion.article
       layout
-      className="relative w-full overflow-hidden bg-black"
+      className="relative w-full cursor-pointer overflow-hidden bg-black focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/40"
       onMouseEnter={onHover}
       onFocus={onHover}
       onClick={onToggleOpen}
@@ -158,6 +158,22 @@ function WorkRow({ project, isActive, isOpen, onHover, onToggleOpen }: WorkRowPr
             <WorkMedia project={project} isActive={isActive} grayscale />
           </div>
         ) : null}
+
+        {/* Hover affordance: subtle "View details" hint on desktop */}
+        <motion.div
+          className="pointer-events-none absolute right-[120px] top-1/2 hidden -translate-y-1/2 items-center gap-2 lg:flex"
+          initial={false}
+          animate={{
+            opacity: isActive || isOpen ? 1 : 0,
+            x: isActive || isOpen ? 0 : 6,
+          }}
+          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <span className="font-sans text-[16px] uppercase tracking-[0.18em] text-white/70">
+            View details
+          </span>
+          <span className="text-[18px] text-white/80">↗</span>
+        </motion.div>
       </motion.div>
 
       <AnimatePresence initial={false}>
