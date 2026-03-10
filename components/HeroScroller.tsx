@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { characters } from "@/lib/characters";
 import { useScrollSteps } from "@/lib/useScrollSteps";
 import { CharacterStage } from "@/components/CharacterStage";
+import { Header } from "@/components/Header";
 
 function hexToRgb(hex: string) {
   const h = hex.replace("#", "").trim();
@@ -58,6 +59,7 @@ export function HeroScroller() {
     <section ref={sectionRef} className="relative h-[400vh]" aria-label="Hero">
       {/* Sticky hero */}
       <div className="sticky top-0 h-screen overflow-hidden">
+        <Header />
         {/* Background (per character, full-viewport) */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <motion.div

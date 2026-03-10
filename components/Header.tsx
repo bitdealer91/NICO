@@ -72,7 +72,7 @@ export function Header() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-40">
+      <header className="absolute inset-x-0 top-0 z-40">
         <div className="relative mx-auto h-[110px] w-full max-w-[1440px]">
           {/* Desktop (Figma layout) */}
           <div className="hidden lg:block">

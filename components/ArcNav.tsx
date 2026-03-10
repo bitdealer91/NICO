@@ -110,12 +110,20 @@ export function ArcNav({ items, activeIndex, onSelectIndex, className }: ArcNavP
               style={{
                 width: 847,
                 height: 847,
-                transform: "translate(-50%, 105%)",
-                boxShadow: `0 0 200px 10px ${activeRoleColor}, inset 0 0 50px 10px ${activeRoleColor}`,
+                // Centered on the ellipse so glow hugs its contour.
+                transform: "translate(-50%, 90%)",
+                // Tight halo along the edge: small outer + inner glow.
+                boxShadow: `
+                  0 0 75px 0 ${activeRoleColor},
+                  inset 0 0 45px 8px ${activeRoleColor}
+                `,
                 borderRadius: "9999px",
               }}
               animate={{
-                boxShadow: `0 0 200px 10px ${activeRoleColor}, inset 0 0 50px 10px ${activeRoleColor}`,
+                boxShadow: `
+                  0 0 75px 0 ${activeRoleColor},
+                  inset 0 0 45px 8px ${activeRoleColor}
+                `,
               }}
               transition={ellipseColorTransition}
             />
