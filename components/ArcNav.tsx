@@ -18,19 +18,6 @@ export function ArcNav({ items, activeIndex, onSelectIndex, className }: ArcNavP
   const active = items[Math.min(items.length - 1, Math.max(0, activeIndex))];
   const activeRoleColor = active.roleColor ?? "#EBB55C";
 
-  const clickTargetsById = useMemo(
-    () =>
-      ({
-        // In ArcNav labels viewport coordinates (968x908), derived from the original label ring centroids.
-        // These are only used for click hit-areas (they rotate together with the labels layer).
-        thinker: { x: 473.3, y: 20.7, rotateDeg: 358.63 },
-        builder: { x: 756.8, y: 110.5, rotateDeg: 395.92 },
-        creator: { x: 929.5, y: 357.6, rotateDeg: 433.85 },
-        launcher: { x: 907.1, y: 673.0, rotateDeg: 113.81 },
-      }) satisfies Record<Character["id"], { x: number; y: number; rotateDeg: number }>,
-    []
-  );
-
   const viewportH = 255;
   // Match Figma spacing precisely:
   // In Figma (Desktop - 1):
@@ -76,7 +63,6 @@ export function ArcNav({ items, activeIndex, onSelectIndex, className }: ArcNavP
 
   useEffect(() => {
     if (reduceMotion) {
-      setAnimatedOffsetDelta(targetOffsetDelta);
       offsetDeltaSpring.set(targetOffsetDelta);
     } else {
       offsetDeltaSpring.set(targetOffsetDelta);

@@ -85,7 +85,7 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
       <div className="hidden lg:block h-full">
         <h1
           className={[
-            "absolute left-[40px] top-[329px] select-none",
+            "absolute left-[40px] bottom-[110px] select-none",
             "text-white",
             "tracking-[-0.023em] leading-[0.82]",
           ].join(" ")}

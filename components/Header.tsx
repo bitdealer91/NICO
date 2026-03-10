@@ -5,7 +5,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { ConnectModal } from "@/components/ConnectModal";
 
-type SectionId = "about" | "work";
+type SectionId = "about" | "work" | "contact";
+type NavId = SectionId;
 
 function prefersReducedMotion() {
   if (typeof window === "undefined") return false;
@@ -20,14 +21,15 @@ export function Header() {
   const navItems = useMemo(
     () =>
       [
-        { id: "about" as const, label: "About" },
-        { id: "work" as const, label: "Work" },
-      ] satisfies { id: SectionId; label: string }[],
+        { id: "about" as NavId, label: "About" },
+        { id: "work" as NavId, label: "Work" },
+        { id: "contact" as NavId, label: "Contact" },
+      ] satisfies { id: NavId; label: string }[],
     []
   );
 
   useEffect(() => {
-    const ids: SectionId[] = ["about", "work"];
+    const ids: SectionId[] = ["about", "work", "contact"];
     const els = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     if (els.length === 0) return;
 
@@ -36,8 +38,8 @@ export function Header() {
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0))[0];
-        if (visible?.target?.id === "about" || visible?.target?.id === "work") {
-          setActiveSection(visible.target.id);
+        if (visible?.target?.id === "about" || visible?.target?.id === "work" || visible?.target?.id === "contact") {
+          setActiveSection(visible.target.id as SectionId);
         }
       },
       { root: null, threshold: [0.2, 0.35, 0.5, 0.65] }
@@ -54,7 +56,12 @@ export function Header() {
   }
 
   function openConnect() {
-    setConnectOpen(true);
+    const el = document.getElementById("contact");
+    if (el) {
+      el.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+    } else {
+      setConnectOpen(true);
+    }
   }
 
   function closeConnect() {
@@ -75,7 +82,7 @@ export function Header() {
 
             <nav
               aria-label="Primary"
-              className="absolute left-1/2 top-[42px] flex h-[60px] w-[303px] -translate-x-1/2 items-center justify-between rounded-[50px] bg-white/20 px-[43px]"
+              className="absolute left-1/2 top-[42px] flex h-[38px] w-[361px] -translate-x-1/2 items-center justify-between"
             >
               {navItems.map((item) => {
                 const isActive = activeSection === item.id;
@@ -83,9 +90,9 @@ export function Header() {
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => scrollTo(item.id)}
+                    onClick={() => (item.id === "contact" ? openConnect() : scrollTo(item.id))}
                     className={[
-                      "font-sans text-[25px] leading-[37.5px] font-bold tracking-[-0.023em] transition-opacity",
+                      "font-sans text-[25px] leading-[37.5px] font-normal tracking-[-0.575px] transition-opacity",
                       "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/40",
                       isActive ? "text-white opacity-100" : "text-white opacity-90 hover:opacity-100",
                     ].join(" ")}
@@ -126,14 +133,14 @@ export function Header() {
             </div>
 
             <div className="mt-3 flex items-center justify-center">
-              <div className="flex h-[52px] w-full max-w-[360px] items-center justify-between rounded-full border border-white/10 bg-black/30 px-6 backdrop-blur-lg">
+                  <div className="flex h-[52px] w-full max-w-[360px] items-center justify-between rounded-full border border-white/10 bg-black/30 px-6 backdrop-blur-lg">
                 {navItems.map((item) => {
                   const isActive = activeSection === item.id;
                   return (
                     <button
                       key={item.id}
                       type="button"
-                      onClick={() => scrollTo(item.id)}
+                      onClick={() => (item.id === "contact" ? openConnect() : scrollTo(item.id))}
                       className={[
                         "rounded-full px-3 py-2 text-sm font-semibold transition-colors",
                         "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)]",
