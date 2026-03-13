@@ -49,7 +49,7 @@ const PROJECTS: WorkProject[] = [
     title: "WEB3 SHOWCASE",
     imageSrc: "/assets/images/work-web3.png",
     videoSrc: "/assets/videos/work-web3.mp4",
-    accent: "#FFFFFF",
+    accent: "#4FBBC5",
     description: [
       "A cinematic showcase for a Web3 gaming experience, built to highlight the full visual universe.",
       "The page combined motion, lighting, and interface previews to communicate the product vision in one scroll.",

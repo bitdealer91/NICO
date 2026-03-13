@@ -96,33 +96,37 @@ export function Sections() {
         className="relative mx-auto flex min-h-screen max-w-[1440px] flex-col px-10 pb-12 pt-16 lg:pb-16 lg:pt-20"
       >
         <div className="flex flex-1 flex-col gap-y-12 lg:flex-row lg:items-start lg:gap-x-16">
-          <div className="max-w-[461px]">
+          {/* Left copy: match Figma vertical rhythm (slightly tighter than 134px so baseline aligns with right block) */}
+          <div className="flex max-w-[461px] flex-col gap-[105px]">
             <p
-              className="text-[32px] font-bold uppercase leading-[1.5] tracking-[-0.92px] sm:text-[36px] md:text-[40px]"
+              className="text-[40px] font-bold uppercase leading-[1.5] tracking-[-0.92px] text-white"
               style={{ fontFamily: "var(--font-nav)" }}
             >
-              NICO STUDIO IS THE LAUNCH CREW BEHIND MODERN DIGITAL PRODUCTS.
+              NICO Studio is the launch crew behind modern digital products.
             </p>
             <p
-              className="mt-8 text-[32px] font-bold uppercase leading-none tracking-[-0.92px] sm:text-[36px] md:text-[40px]"
+              className="text-[40px] font-bold uppercase leading-none tracking-[-0.92px] text-white whitespace-normal lg:whitespace-nowrap"
               style={{ fontFamily: "var(--font-nav)" }}
             >
-              WE CALL IT THE LAUNCH CREW.
+              We call it THE LAUNCH CREW.
             </p>
           </div>
 
-          <div className="mt-0 max-w-[783px] text-[18px] leading-[1.5] tracking-[-0.575px] text-white sm:text-[20px] md:text-[25px]">
-            <p>Founders bring the vision. We make it real.</p>
-            <p className="mt-4">
+          <div
+            className="mt-[10px] max-w-[783px] text-[25px] font-normal tracking-[-0.575px] text-white"
+            style={{ fontFamily: "var(--font-sans)" }}
+          >
+            <p className="leading-none">Founders bring the vision. We make it real.</p>
+            <p className="mt-[24px] leading-[1.5]">
               From strategy to design, from code to motion — we work as one team focused on one goal: launching
               products people want to use.
             </p>
-            <p className="mt-4">
+            <p className="mt-[24px] leading-[1.5]">
               No disconnected freelancers. No slow handoffs.
               <br />
               Just one crew moving fast from idea to launch.
             </p>
-            <p className="mt-4">
+            <p className="mt-[24px] leading-[1.5]">
               Landing pages in days. Complex platforms built for long-term growth. Idea, design, or just a vision —
               NICO Studio becomes your launch team.
             </p>

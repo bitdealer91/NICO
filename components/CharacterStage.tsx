@@ -82,10 +82,10 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
   return (
     <div className="relative mx-auto h-full w-full max-w-[1440px]">
       {/* Desktop (pixel-ish to Figma) */}
-      <div className="hidden lg:block h-full">
+      <div className="hidden h-full lg:block">
         <h1
           className={[
-            "absolute left-[40px] bottom-[110px] select-none",
+            "absolute left-[40px] top-[310px] select-none",
             "text-white",
             "tracking-[-0.023em] leading-[0.82]",
           ].join(" ")}
@@ -179,7 +179,10 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
               <div className="select-none tracking-[-0.02em] leading-[0.86]">
                 <div className="font-display text-white text-[clamp(44px,10vw,84px)]">THE</div>
                 <div className="font-display text-white text-[clamp(44px,10vw,84px)]">LAUNCH</div>
-                <div className="font-accent text-[clamp(44px,10vw,84px)]" style={{ color: active.roleColor ?? "var(--gold)" }}>
+                <div
+                  className="font-accent text-[clamp(44px,10vw,84px)]"
+                  style={{ color: active.roleColor ?? "var(--gold)" }}
+                >
                   CREW
                 </div>
               </div>

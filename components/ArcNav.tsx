@@ -147,6 +147,11 @@ export function ArcNav({ items, activeIndex, onSelectIndex, className }: ArcNavP
 
             {items.map((item, i) => {
               const startOffset = offsetForIndex(i);
+              const isExtremeHidden =
+                (activeIndex === 0 && i === items.length - 1) ||
+                (activeIndex === items.length - 1 && i === 0);
+              const baseOpacity = item.id === active.id ? 1 : 0.35;
+              const opacity = isExtremeHidden ? 0 : baseOpacity;
               return (
               <text
                 key={item.id}
@@ -154,7 +159,7 @@ export function ArcNav({ items, activeIndex, onSelectIndex, className }: ArcNavP
                 fontWeight="700"
                 fontSize="28"
                 fill="white"
-                opacity={item.id === active.id ? 1 : 0.35}
+                opacity={opacity}
               >
                 <textPath href="#arcPath" startOffset={`${startOffset}%`} textAnchor="middle">
                   {item.navLabel}
