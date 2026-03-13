@@ -10,7 +10,7 @@ export function ContactSection() {
   return (
     <section
       id="contact"
-      className="relative mx-auto flex min-h-[362px] max-w-[1440px] items-center justify-center bg-black px-[10px] pb-[85px] pt-[80px] text-white"
+      className="relative mx-auto flex min-h-[50px] max-w-[1440px] items-center justify-center bg-black px-[10px] pb-[48px] pt-[48px] text-white"
     >
       <div className="flex w-full max-w-[730px] flex-col items-center gap-[33px] text-center">
         <p

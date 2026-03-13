@@ -56,7 +56,7 @@ export function HeroScroller() {
   }, [accent, accentRgb]);
 
   return (
-    <section ref={sectionRef} className="relative h-[400vh]" aria-label="Hero">
+    <section ref={sectionRef} className="relative h-[400vh] lg:snap-start" aria-label="Hero">
       {/* Sticky hero */}
       <div className="sticky top-0 h-screen overflow-hidden">
         <Header />

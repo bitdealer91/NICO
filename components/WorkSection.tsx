@@ -226,7 +226,7 @@ export function WorkSection() {
   return (
     <section
       id="work"
-      className="relative mx-auto flex min-h-screen max-w-[1440px] flex-col bg-black px-[10px] pb-24 pt-16 text-white lg:pb-[120px]"
+      className="relative mx-auto flex min-h-screen max-w-[1440px] flex-col bg-black px-[10px] pb-24 pt-16 text-white lg:snap-start lg:pb-[120px]"
     >
       {/* Desktop layout (WORK rows only; contact CTA moved to ContactSection) */}
       <div className="hidden w-full flex-col gap-[80px] lg:flex">

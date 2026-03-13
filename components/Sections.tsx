@@ -93,7 +93,7 @@ export function Sections() {
     <div className="relative bg-black text-white">
       <section
         id="about"
-        className="relative mx-auto flex min-h-screen max-w-[1440px] flex-col px-10 pb-12 pt-16 lg:pb-16 lg:pt-20"
+        className="relative mx-auto flex min-h-screen max-w-[1440px] flex-col px-10 pb-12 pt-10 lg:pb-16 lg:pt-14"
       >
         <div className="flex flex-1 flex-col gap-y-12 lg:flex-row lg:items-start lg:gap-x-16">
           {/* Left copy: match Figma vertical rhythm (slightly tighter than 134px so baseline aligns with right block) */}

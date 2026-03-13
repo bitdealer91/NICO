@@ -4,25 +4,25 @@ export function Footer() {
   return (
     <footer className="relative mx-auto flex h-[268px] w-full max-w-[1440px] bg-black px-[10px] text-white">
       <div className="relative h-full w-full">
-        {/* Logo block (matches Figma positioning) */}
-        <div className="absolute left-0 top-0 h-[174px] w-[268px]">
+        {/* Logo block */}
+        <div className="absolute left-[40px] top-0 h-[174px] w-[268px]">
           <Image src="/figma/logo.png" alt="NICO studio" fill className="object-contain" priority />
         </div>
 
-        {/* Middle copy (two-line Manrope, with extra line gap like Figma) */}
+        {/* Middle copy */}
         <div className="-translate-y-1/2 absolute left-[553px] top-[30px]">
           <p
             className="font-sans text-[25px] font-normal leading-[28px] text-white"
             style={{ fontFamily: "var(--font-sans)" }}
           >
-            Partnering with founders
+            Partnering with founders to
             <br />
-            to turn ideas into real products.
+            turn ideas into real products.
           </p>
         </div>
 
-        {/* Right column: email + X */}
-        <div className="-translate-y-1/2 absolute left-[1097px] top-[10px] text-right">
+        {/* Right column: email + X, aligned with first line of center text */}
+        <div className="-translate-y-1/2 absolute left-[1097px] top-[30px] text-right">
           <a
             href="mailto:hello@nico.studio.com"
             className="font-sans text-[25px] font-normal leading-[20px] text-white underline"
@@ -30,7 +30,7 @@ export function Footer() {
           >
             hello@nico.studio.com
           </a>
-          <div className="-translate-y-1/2 absolute left-0 top-[40px] w-full">
+          <div className="mt-[20px]">
             <a
               href="https://x.com/dreava_art"
               target="_blank"
@@ -44,7 +44,7 @@ export function Footer() {
         </div>
 
         {/* Bottom copyright */}
-        <div className="-translate-y-1/2 absolute left-0 top-[227px]">
+        <div className="-translate-y-1/2 absolute left-[40px] top-[227px]">
           <p
             className="font-sans text-[15px] font-normal leading-[20px] text-white"
             style={{ fontFamily: "var(--font-sans)" }}
