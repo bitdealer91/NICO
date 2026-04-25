@@ -132,7 +132,7 @@ function WorkRow({ project, isActive, isOpen, onHover, onToggleOpen }: WorkRowPr
       transition={{ layout: { duration: 0.24, ease: [0.25, 0.8, 0.25, 1] } }}
     >
       <motion.div layout className="relative h-[208px]">
-        <div className="-translate-y-1/2 absolute left-[40px] top-[79px] flex flex-col justify-center leading-[0] text-[25px] font-normal text-white">
+        <div className="select-none -translate-y-1/2 absolute left-[40px] top-[79px] flex flex-col justify-center leading-[0] text-[25px] font-normal text-white">
           <p
             className="font-sans leading-[20px] tracking-[-0.575px]"
             style={isOpen ? { color: project.accent } : undefined}
@@ -140,7 +140,7 @@ function WorkRow({ project, isActive, isOpen, onHover, onToggleOpen }: WorkRowPr
             {project.index}
           </p>
         </div>
-        <div className="-translate-y-1/2 absolute left-[115px] top-[103.5px] flex flex-col justify-center leading-[0] text-[40px] font-bold text-white">
+        <div className="select-none -translate-y-1/2 absolute left-[115px] top-[103.5px] flex flex-col justify-center leading-[0] text-[40px] font-bold text-white">
           <p
             className="whitespace-nowrap leading-[68.26px] tracking-[0] uppercase"
             style={{ fontFamily: "var(--font-nav)", color: isOpen ? project.accent : "#FFFFFF" }}

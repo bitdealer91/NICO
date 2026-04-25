@@ -77,7 +77,7 @@ export function Header() {
           {/* Desktop (Figma layout) */}
           <div className="hidden lg:block">
             <div className="absolute left-[40px] top-[42px]">
-              <Image src="/figma/logo.png" alt="NICO studio" width={131} height={85} priority />
+              <Image src="/figma/Logo.png" alt="NICO studio" width={131} height={85} priority />
             </div>
 
             <nav
@@ -93,8 +93,8 @@ export function Header() {
                     onClick={() => (item.id === "contact" ? openConnect() : scrollTo(item.id))}
                     className={[
                       "font-sans text-[25px] leading-[37.5px] font-normal tracking-[-0.575px] transition-opacity",
-                      "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/40",
-                      isActive ? "text-white opacity-100" : "text-white opacity-90 hover:opacity-100",
+                      "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f3f3f3]",
+                      isActive ? "text-[#181818] opacity-100" : "text-[#181818] opacity-75 hover:opacity-100",
                     ].join(" ")}
                   >
                     {item.label}
@@ -133,7 +133,7 @@ export function Header() {
             </div>
 
             <div className="mt-3 flex items-center justify-center">
-                  <div className="flex h-[52px] w-full max-w-[360px] items-center justify-between rounded-full border border-white/10 bg-black/30 px-6 backdrop-blur-lg">
+                  <div className="flex h-[52px] w-full max-w-[360px] items-center justify-between rounded-full border border-black/10 bg-white/40 px-6 backdrop-blur-lg">
                 {navItems.map((item) => {
                   const isActive = activeSection === item.id;
                   return (
@@ -144,7 +144,7 @@ export function Header() {
                       className={[
                         "rounded-full px-3 py-2 text-sm font-semibold transition-colors",
                         "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)]",
-                        isActive ? "text-white" : "text-white/75 hover:text-white",
+                        isActive ? "text-[#181818]" : "text-[#181818]/70 hover:text-[#181818]",
                       ].join(" ")}
                     >
                       {item.label}

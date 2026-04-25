@@ -1,7 +1,4 @@
 "use client";
-
-import Image from "next/image";
-import { motion } from "framer-motion";
 import { useEffect, useMemo, useRef } from "react";
 
 import { characters } from "@/lib/characters";
@@ -21,7 +18,6 @@ function hexToRgb(hex: string) {
 }
 
 export function HeroScroller() {
-  const bgVersion = "2026-02-25-bg-v2";
   const sectionRef = useRef<HTMLElement | null>(null);
   const { activeIndex, reduceMotion } = useScrollSteps({
     targetRef: sectionRef,
@@ -58,34 +54,8 @@ export function HeroScroller() {
   return (
     <section ref={sectionRef} className="relative h-[400vh] lg:snap-start" aria-label="Hero">
       {/* Sticky hero */}
-      <div className="sticky top-0 h-screen overflow-hidden">
+      <div className="sticky top-0 h-screen overflow-hidden bg-[#F3F3F3]">
         <Header />
-        {/* Background (per character, full-viewport) */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <motion.div
-            className="absolute inset-0 flex h-full w-[400%]"
-            animate={{ x: `-${activeIndex * 25}%` }}
-            transition={
-              reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 120, damping: 22, mass: 0.7 }
-            }
-          >
-            {characters.map((c) => (
-              <div key={c.id} className="relative h-full w-[25%] shrink-0">
-                {c.figmaBgSrc ? (
-                  <Image
-                    src={`${c.figmaBgSrc}?v=${bgVersion}`}
-                    alt=""
-                    fill
-                    priority
-                    unoptimized
-                    className="object-cover"
-                    sizes="100vw"
-                  />
-                ) : null}
-              </div>
-            ))}
-          </motion.div>
-        </div>
 
         <div className="relative z-10 h-full">
           <CharacterStage

@@ -12,7 +12,7 @@ export function Footer() {
         {/* Middle copy */}
         <div className="-translate-y-1/2 absolute left-[553px] top-[30px]">
           <p
-            className="font-sans text-[25px] font-normal leading-[28px] text-white"
+            className="select-none font-sans text-[25px] font-normal leading-[28px] text-white"
             style={{ fontFamily: "var(--font-sans)" }}
           >
             Partnering with founders to

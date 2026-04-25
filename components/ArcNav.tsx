@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useMotionValueEvent, useReducedMotion, useSpring } from "framer-motion";
+import { useMotionValueEvent, useReducedMotion, useSpring } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 
 import type { Character } from "@/lib/characters";
@@ -16,7 +16,6 @@ type ArcNavProps = {
 export function ArcNav({ items, activeIndex, onSelectIndex, className }: ArcNavProps) {
   const reduceMotion = !!useReducedMotion();
   const active = items[Math.min(items.length - 1, Math.max(0, activeIndex))];
-  const activeRoleColor = active.roleColor ?? "#EBB55C";
 
   const viewportH = 255;
   // Match Figma spacing precisely:
@@ -43,7 +42,6 @@ export function ArcNav({ items, activeIndex, onSelectIndex, className }: ArcNavP
   const dotY = strokeCircleTopY;
 
   const ringCenter = { x: 484.5, y: 486.5 };
-  const ellipseColorTransition = reduceMotion ? { duration: 0 } : { duration: 0.5, ease: "easeInOut" as const };
   const labelOffsetStep = 100 / items.length;
 
   // Shift labels along the fixed path so the active one sits at 50% (top of arc) without rotating the arc.
@@ -102,30 +100,7 @@ export function ArcNav({ items, activeIndex, onSelectIndex, className }: ArcNavP
               fill
               priority
               className="relative z-10 object-contain"
-              style={{ filter: "brightness(0)", objectPosition: "50% 100%" }}
-            />
-
-            <motion.div
-              className="absolute left-1/2 pointer-events-none z-[11]"
-              style={{
-                width: 847,
-                height: 847,
-                // Centered on the ellipse so glow hugs its contour.
-                transform: "translate(-50%, 90%)",
-                // Tight halo along the edge: small outer + inner glow.
-                boxShadow: `
-                  0 0 75px 0 ${activeRoleColor},
-                  inset 0 0 45px 8px ${activeRoleColor}
-                `,
-                borderRadius: "9999px",
-              }}
-              animate={{
-                boxShadow: `
-                  0 0 75px 0 ${activeRoleColor},
-                  inset 0 0 45px 8px ${activeRoleColor}
-                `,
-              }}
-              transition={ellipseColorTransition}
+              style={{ objectPosition: "50% 100%", filter: "invert(1) brightness(1.12)" }}
             />
           </div>
         </div>

@@ -99,13 +99,13 @@ export function Sections() {
           {/* Left copy: match Figma vertical rhythm (slightly tighter than 134px so baseline aligns with right block) */}
           <div className="flex max-w-[461px] flex-col gap-[105px]">
             <p
-              className="text-[40px] font-bold uppercase leading-[1.5] tracking-[-0.92px] text-white"
+              className="select-none text-[40px] font-bold uppercase leading-[1.5] tracking-[-0.92px] text-white"
               style={{ fontFamily: "var(--font-nav)" }}
             >
               NICO Studio is the launch crew behind modern digital products.
             </p>
             <p
-              className="text-[40px] font-bold uppercase leading-none tracking-[-0.92px] text-white whitespace-normal lg:whitespace-nowrap"
+              className="select-none text-[40px] font-bold uppercase leading-none tracking-[-0.92px] text-white whitespace-normal lg:whitespace-nowrap"
               style={{ fontFamily: "var(--font-nav)" }}
             >
               We call it THE LAUNCH CREW.

@@ -14,7 +14,7 @@ export function ContactSection() {
     >
       <div className="flex w-full max-w-[730px] flex-col items-center gap-[33px] text-center">
         <p
-          className="text-[40px] font-bold uppercase leading-[68.26px] tracking-[0] text-white"
+          className="select-none text-[40px] font-bold uppercase leading-[68.26px] tracking-[0] text-white"
           style={{ fontFamily: "var(--font-nav)" }}
         >
           An idea, a design, or just a direction —
