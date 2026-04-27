@@ -4,7 +4,7 @@ import { ContactSection } from "@/components/ContactSection";
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-white">
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--foreground)]">
       <main>
         <ScrollToTopOnLoad />
         <Header />

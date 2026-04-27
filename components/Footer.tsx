@@ -2,17 +2,15 @@ import Image from "next/image";
 
 export function Footer() {
   return (
-    <footer className="relative mx-auto flex h-[268px] w-full max-w-[1440px] bg-black px-[10px] text-white">
+    <footer className="relative mx-auto flex h-[268px] w-full max-w-[1440px] bg-[#F3F3F3] px-[10px] text-[#181818] lg:snap-start">
       <div className="relative h-full w-full">
-        {/* Logo block */}
         <div className="absolute left-[40px] top-0 h-[174px] w-[268px]">
-          <Image src="/figma/logo.png" alt="NICO studio" fill className="object-contain" priority />
+          <Image src="/figma/Logo.png" alt="NICO studio" fill className="object-contain" priority />
         </div>
 
-        {/* Middle copy */}
-        <div className="-translate-y-1/2 absolute left-[553px] top-[30px]">
+        <div className="-translate-y-1/2 absolute left-[553px] top-[30px] w-[335px]">
           <p
-            className="select-none font-sans text-[25px] font-normal leading-[28px] text-white"
+            className="select-none font-sans text-[25px] font-normal leading-[33.1px] text-[#181818]"
             style={{ fontFamily: "var(--font-sans)" }}
           >
             Partnering with founders to
@@ -21,21 +19,20 @@ export function Footer() {
           </p>
         </div>
 
-        {/* Right column: email + X, aligned with first line of center text */}
-        <div className="-translate-y-1/2 absolute left-[1097px] top-[30px] text-right">
+        <div className="-translate-y-1/2 absolute left-[1097px] top-[30px] text-left">
           <a
-            href="mailto:hello@nico.studio.com"
-            className="font-sans text-[25px] font-normal leading-[20px] text-white underline"
+            href="mailto:hello@nicolab.studio"
+            className="font-sans text-[25px] font-bold leading-[33.1px] text-[#181818] underline"
             style={{ fontFamily: "var(--font-sans)" }}
           >
-            hello@nico.studio.com
+            hello@nicolab.studio
           </a>
-          <div className="mt-[20px]">
+          <div className="mt-2">
             <a
               href="https://x.com/dreava_art"
               target="_blank"
               rel="noreferrer"
-              className="font-sans text-[25px] font-normal leading-[20px] text-white hover:opacity-80"
+              className="font-sans text-[25px] font-bold leading-[33.1px] text-[#181818]/80 transition-opacity hover:opacity-100"
               style={{ fontFamily: "var(--font-sans)" }}
             >
               X
@@ -43,10 +40,9 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Bottom copyright */}
         <div className="-translate-y-1/2 absolute left-[40px] top-[227px]">
           <p
-            className="font-sans text-[15px] font-normal leading-[20px] text-white"
+            className="font-sans text-[15px] font-normal leading-[20px] text-[#181818]"
             style={{ fontFamily: "var(--font-sans)" }}
           >
             © 2026 NICO Studio. All rights reserved.
@@ -56,4 +52,3 @@ export function Footer() {
     </footer>
   );
 }
-

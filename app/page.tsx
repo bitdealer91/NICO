@@ -7,9 +7,9 @@ import { ScrollToTopOnLoad } from "@/components/ScrollToTopOnLoad";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-white">
+    <div className="min-h-screen bg-[#F3F3F3] text-[#181818]">
       {/* Main content */}
-      <main>
+      <main className="lg:snap-y lg:snap-proximity">
         <ScrollToTopOnLoad />
         <HeroScroller />
         <Sections />

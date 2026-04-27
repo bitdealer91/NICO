@@ -1,9 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #0b0b0c;
+  /* Site canvas (Figma) */
+  --bg: #f3f3f3;
   --background: var(--bg);
-  --foreground: rgba(255, 255, 255, 0.92);
+  --foreground: #181818;
   --gold: #ebb55c;
   --accent: var(--gold);
   --accent-rgb: 235 181 92;
@@ -17,7 +18,7 @@
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
@@ -50,6 +51,12 @@ h6 {
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-snap-type: y proximity;
   }
 }
 

@@ -116,11 +116,8 @@ export function Header() {
           {/* Mobile / tablet */}
           <div className="lg:hidden px-5 sm:px-8 pt-4">
             <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <div className="grid h-10 w-10 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur">
-                  <div className="h-4 w-4 rounded bg-[var(--gold)] shadow-[0_10px_30px_rgba(226,178,90,0.25)]" />
-                </div>
-                <div className="text-sm font-semibold tracking-tight text-white">NICO studio</div>
+              <div className="relative h-8 w-28 shrink-0">
+                <Image src="/figma/Logo.png" alt="NICO studio" fill className="object-contain object-left" />
               </div>
               <button
                 ref={connectBtnRef}
