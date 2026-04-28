@@ -28,6 +28,11 @@ const oswald = Oswald({
 export const metadata: Metadata = {
   title: "NICO studio",
   description: "NICO studio — The Launch Crew",
+  icons: {
+    icon: "/figma/logo.png",
+    shortcut: "/figma/logo.png",
+    apple: "/figma/logo.png",
+  },
 };
 
 export default function RootLayout({

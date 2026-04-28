@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="relative mx-auto w-full max-w-[1440px] bg-[#F3F3F3] px-[10px] pb-8 text-[#181818] lg:h-[268px] lg:snap-start lg:pb-0">
       <div className="relative hidden h-full w-full lg:block">
         <div className="absolute left-[40px] top-0 h-[174px] w-[268px]">
-          <Image src="/figma/Logo.png" alt="NICO studio" fill className="object-contain" priority />
+          <Image src="/figma/logo.png" alt="NICO studio" fill className="object-contain" priority />
         </div>
 
         <div className="-translate-y-1/2 absolute left-[553px] top-[30px] w-[335px]">
@@ -51,7 +51,7 @@ export function Footer() {
       </div>
       <div className="flex flex-col items-center pt-6 text-center lg:hidden">
         <div className="relative h-[72px] w-[111px]">
-          <Image src="/figma/Logo.png" alt="NICO studio" fill className="object-contain" />
+          <Image src="/figma/logo.png" alt="NICO studio" fill className="object-contain" />
         </div>
         <p className="mt-7 font-sans text-[14px] leading-[1.5] tracking-[-0.322px] text-[#181818]">
           Partnering with founders to turn ideas into real products.
