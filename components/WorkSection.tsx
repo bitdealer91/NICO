@@ -318,7 +318,7 @@ export function WorkSection() {
       {/* Figma: WORK watermark + rows with 24px gap */}
       <div className="hidden w-full flex-col gap-6 lg:flex">
         <motion.div
-          className="relative w-full overflow-hidden will-change-transform"
+          className="relative -mx-[45px] w-[calc(100%+90px)] overflow-hidden will-change-transform"
           style={{ height: titleHeight, opacity: titleOpacity, y: titleY }}
         >
           <WorkCurvedLoopText />
