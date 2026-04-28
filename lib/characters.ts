@@ -5,6 +5,7 @@ export type Character = {
   roleBody: string[];
   imageSrc: string;
   videoSrc?: string;
+  mobileVideoSrc?: string;
   figmaBgSrc?: string;
   roleColor?: string;
   stageScale?: number;
@@ -22,6 +23,7 @@ export const characters: Character[] = [
     ],
     imageSrc: "/characters/thinker.png",
     videoSrc: "/characters/videos/thinker.mp4",
+    mobileVideoSrc: "/characters/videos/thinkerMobile.mp4",
     figmaBgSrc: "/figma/hero-bg-1@2x.png",
     roleColor: "#EBB55C",
     stageScale: 1,
@@ -36,6 +38,7 @@ export const characters: Character[] = [
     ],
     imageSrc: "/characters/builder.png",
     videoSrc: "/characters/videos/builder.mp4",
+    mobileVideoSrc: "/characters/videos/builderMoblie.mp4",
     figmaBgSrc: "/figma/hero-bg-2@2x.png",
     roleColor: "#D2312F",
     stageScale: 1,
@@ -50,6 +53,7 @@ export const characters: Character[] = [
     ],
     imageSrc: "/characters/creator.png",
     videoSrc: "/characters/videos/creator.mp4",
+    mobileVideoSrc: "/characters/videos/creatorMobile.mp4",
     figmaBgSrc: "/figma/hero-bg-3@2x.png",
     roleColor: "#518C52",
     stageScale: 1,
@@ -62,6 +66,7 @@ export const characters: Character[] = [
     roleBody: ["We bring everything together — turning vision into a product ready for real users."],
     imageSrc: "/characters/launcher.png",
     videoSrc: "/characters/videos/launcher.mp4",
+    mobileVideoSrc: "/characters/videos/launcherMobile.mp4",
     figmaBgSrc: "/figma/hero-bg-4@2x.png",
     roleColor: "#43949B",
     stageScale: 1,

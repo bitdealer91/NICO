@@ -101,8 +101,59 @@ function CharacterVisual({
   );
 }
 
+function SideCharacterPreview({ item }: { item: Character }) {
+  const [failed, setFailed] = useState(false);
+  const src = item.mobileVideoSrc ?? item.videoSrc;
+
+  return (
+    <div className="absolute inset-0 isolate">
+      <div className="pointer-events-none absolute inset-0 z-0 bg-[#F3F3F3]" aria-hidden />
+      {!failed && src ? (
+        <video
+          className="absolute inset-0 z-[1] h-full w-full object-contain object-bottom mix-blend-darken"
+          src={src}
+          autoPlay
+          loop
+          muted
+          playsInline
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <Image src={item.imageSrc} alt="" fill sizes="180px" className="object-contain object-bottom mix-blend-darken" />
+      )}
+    </div>
+  );
+}
+
 export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex }: CharacterStageProps) {
   const active = items[activeIndex];
+  const hasPrev = activeIndex > 0;
+  const hasNext = activeIndex < items.length - 1;
+  const prev = hasPrev ? items[activeIndex - 1] : null;
+  const next = hasNext ? items[activeIndex + 1] : null;
+  const mobileVideoFor = (item: Character | null) => item?.mobileVideoSrc ?? item?.videoSrc;
+  const sideSizeByActive: Record<
+    Character["id"],
+    {
+      h: number;
+      w: number;
+      xShift: string;
+      y: string;
+      opacity: string;
+      stageH: number;
+      activeScale: number;
+      activeY: number;
+      arcBottom: number;
+      arcH: number;
+      textBottom: number;
+    }
+  > = {
+    thinker: { h: 320, w: 188, xShift: "22%", y: "44%", opacity: "0.96", stageH: 520, activeScale: 1.2, activeY: 34, arcBottom: -42, arcH: 300, textBottom: 44 },
+    builder: { h: 320, w: 188, xShift: "22%", y: "44%", opacity: "0.96", stageH: 520, activeScale: 1.2, activeY: 34, arcBottom: -42, arcH: 300, textBottom: 44 },
+    creator: { h: 320, w: 188, xShift: "22%", y: "44%", opacity: "0.96", stageH: 520, activeScale: 1.2, activeY: 34, arcBottom: -42, arcH: 300, textBottom: 44 },
+    launcher: { h: 320, w: 188, xShift: "22%", y: "44%", opacity: "0.96", stageH: 520, activeScale: 1.2, activeY: 34, arcBottom: -42, arcH: 300, textBottom: 44 },
+  };
+  const sideCfg = sideSizeByActive[active.id];
 
   return (
     <div className="relative mx-auto h-full w-full max-w-[1440px]">
@@ -204,59 +255,126 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
       </div>
 
       {/* Mobile / tablet */}
-      <div className="lg:hidden mx-auto flex h-full w-full max-w-[1240px] flex-col px-5 sm:px-8">
-        <div className="flex flex-1 flex-col justify-center pt-24 sm:pt-28">
-          <div className="grid items-center gap-10 md:grid-cols-[1fr]">
-            <div className="order-1">
-              <div className="select-none tracking-[-0.02em] leading-[0.86]">
-                <div className="font-display text-[#181818] text-[clamp(44px,10vw,84px)]">THE</div>
-                <div className="font-display text-[#181818] text-[clamp(44px,10vw,84px)]">LAUNCH</div>
-                <div
-                  className="font-accent text-[clamp(44px,10vw,84px)]"
-                  style={{ color: active.roleColor ?? "var(--gold)" }}
-                >
-                  CREW
-                </div>
-              </div>
+      <div className="lg:hidden relative mx-auto h-full w-full overflow-visible">
+        <div className="relative z-10 px-4 pt-[clamp(90px,16vh,124px)] text-center">
+          <div className="select-none leading-[0.86] tracking-[-0.023em]">
+            <div className="font-bold text-[#181818]" style={{ fontFamily: "var(--font-nav)", fontSize: "var(--mobile-hero-title-size)" }}>
+              THE
             </div>
-
-            <div className="order-2">
-              {reduceMotion ? (
-                <CharacterVisual videoSrc={active.videoSrc} src={active.imageSrc} id={active.id} reduceMotion />
-              ) : (
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.div
-                    key={active.id}
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <CharacterVisual videoSrc={active.videoSrc} src={active.imageSrc} id={active.id} />
-                  </motion.div>
-                </AnimatePresence>
-              )}
+            <div className="font-bold text-[#181818]" style={{ fontFamily: "var(--font-nav)", fontSize: "var(--mobile-hero-title-size)" }}>
+              LAUNCH
             </div>
-
-            <div className="order-3">
-              <div className="max-w-[520px]">
-                <div
-                  className="font-display text-[28px] leading-[42px] tracking-[-0.02em] uppercase"
-                  style={{ color: active.roleColor ?? "var(--gold)" }}
-                >
-                  {active.roleTitle}
-                </div>
-                <div className="mt-3 whitespace-pre-line text-[#181818] leading-7">
-                  {active.roleBody.join("\n\n")}
-                </div>
-              </div>
+            <div
+              className="font-bold"
+              style={{ color: active.roleColor ?? "var(--gold)", fontFamily: "var(--font-nav)", fontSize: "var(--mobile-hero-title-size)" }}
+            >
+              CREW
             </div>
           </div>
+        </div>
 
-          <div className="mt-8 pb-10">
-            <div className="flex items-center justify-center gap-3">
-              <div className="h-1.5 w-1.5 rounded-full bg-[#181818]/80" />
-              <div className="font-display text-[22px] tracking-[0.02em] text-[#181818]/90">{active.navLabel}</div>
+        <div
+          className="relative z-10 mx-auto mt-0 w-full max-w-[430px] overflow-visible px-2"
+          style={{ height: "clamp(440px, 55vh, 520px)", maxWidth: "min(430px, calc(100vw - 8px))" }}
+        >
+          <div
+            className="pointer-events-none absolute inset-x-[-12px] z-[8] flex -translate-y-1/2 justify-between px-0"
+            style={{ top: sideCfg.y, opacity: Number(sideCfg.opacity) }}
+          >
+            {prev ? (
+              <div
+                className="relative"
+                style={{
+                  height: sideCfg.h,
+                  width: sideCfg.w,
+                  transform: `translateX(-${sideCfg.xShift})`,
+                }}
+              >
+                <SideCharacterPreview item={prev} />
+              </div>
+            ) : (
+              <div style={{ width: sideCfg.w }} />
+            )}
+            {next ? (
+              <div
+                className="relative"
+                style={{
+                  height: sideCfg.h,
+                  width: sideCfg.w,
+                  transform: `translateX(${sideCfg.xShift})`,
+                }}
+              >
+                <SideCharacterPreview item={next} />
+              </div>
+            ) : (
+              <div style={{ width: sideCfg.w }} />
+            )}
+          </div>
+          {reduceMotion ? (
+            <CharacterVisual
+              videoSrc={mobileVideoFor(active)}
+              src={active.imageSrc}
+              id={active.id}
+              reduceMotion
+              scale={sideCfg.activeScale}
+              translateY={sideCfg.activeY}
+            />
+          ) : (
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={active.id}
+                className="relative z-10"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.18}
+                onDragEnd={(_, info) => {
+                  const threshold = 40;
+                  if (info.offset.x <= -threshold && hasNext) onSelectIndex?.(activeIndex + 1);
+                  if (info.offset.x >= threshold && hasPrev) onSelectIndex?.(activeIndex - 1);
+                }}
+              >
+                <CharacterVisual
+                  videoSrc={mobileVideoFor(active)}
+                  src={active.imageSrc}
+                  id={active.id}
+                  scale={sideCfg.activeScale}
+                  translateY={sideCfg.activeY}
+                />
+              </motion.div>
+            </AnimatePresence>
+          )}
+        </div>
+
+        <div className="absolute inset-x-0 z-20" style={{ bottom: sideCfg.arcBottom }}>
+          <div className="mx-auto w-[140%] -translate-x-[14.5%] rounded-t-[50%] bg-[#F3F3F3]" style={{ height: sideCfg.arcH }} />
+          <div className="absolute inset-x-0 px-5 text-center" style={{ bottom: sideCfg.textBottom }}>
+            <div
+              className="mx-auto max-w-[260px] text-[25px] font-bold leading-[1.5] tracking-[-0.575px] uppercase"
+              style={{ color: active.roleColor ?? "var(--gold)", fontFamily: "var(--font-nav)" }}
+            >
+              {active.roleTitle}
+            </div>
+            <div className="mx-auto mt-4 max-w-[193px] whitespace-pre-line font-sans text-[14px] leading-[1.5] tracking-[-0.322px] text-[#181818]">
+              {active.roleBody.join("\n\n")}
+            </div>
+            <div className="mt-5 flex items-center justify-center gap-2.5">
+              {items.map((item, idx) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onSelectIndex?.(idx)}
+                  className={[
+                    "h-2.5 w-2.5 rounded-full transition-all duration-200",
+                    idx === activeIndex ? "bg-[#181818] scale-110" : "bg-[#181818]/30",
+                  ].join(" ")}
+                  aria-label={`Go to ${item.navLabel}`}
+                  aria-current={idx === activeIndex ? "true" : undefined}
+                />
+              ))}
             </div>
           </div>
         </div>

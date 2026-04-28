@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { characters } from "@/lib/characters";
 import { useScrollSteps } from "@/lib/useScrollSteps";
@@ -18,18 +18,35 @@ function hexToRgb(hex: string) {
 }
 
 export function HeroScroller() {
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [mobileIndex, setMobileIndex] = useState(0);
   const sectionRef = useRef<HTMLElement | null>(null);
-  const { activeIndex, reduceMotion } = useScrollSteps({
+  const { activeIndex: scrollIndex, reduceMotion } = useScrollSteps({
     targetRef: sectionRef,
     steps: characters.length,
   });
+  const activeIndex = isDesktop ? scrollIndex : mobileIndex;
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const apply = () => setIsDesktop(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
 
   function scrollToIndex(index: number) {
+    const i = Math.min(characters.length - 1, Math.max(0, index));
+    if (!isDesktop) {
+      setMobileIndex(i);
+      return;
+    }
+
     if (typeof window === "undefined") return;
     const el = sectionRef.current;
     if (!el) return;
 
-    const i = Math.min(characters.length - 1, Math.max(0, index));
     const rect = el.getBoundingClientRect();
     const sectionTop = rect.top + window.scrollY;
     const maxScroll = Math.max(1, el.offsetHeight - window.innerHeight);
@@ -52,9 +69,9 @@ export function HeroScroller() {
   }, [accent, accentRgb]);
 
   return (
-    <section ref={sectionRef} className="relative h-[400vh] lg:snap-start" aria-label="Hero">
+    <section ref={sectionRef} className={isDesktop ? "relative h-[400vh] lg:snap-start" : "relative h-screen overflow-x-hidden overflow-y-visible"} aria-label="Hero">
       {/* Sticky hero */}
-      <div className="sticky top-0 h-screen overflow-hidden bg-[#F3F3F3]">
+      <div className={isDesktop ? "sticky top-0 h-screen overflow-hidden bg-[#F3F3F3]" : "h-screen overflow-x-hidden overflow-y-visible bg-[#F3F3F3]"}>
         <Header />
 
         <div className="relative z-10 h-full">

@@ -2,8 +2,8 @@ import Image from "next/image";
 
 export function Footer() {
   return (
-    <footer className="relative mx-auto flex h-[268px] w-full max-w-[1440px] bg-[#F3F3F3] px-[10px] text-[#181818] lg:snap-start">
-      <div className="relative h-full w-full">
+    <footer className="relative mx-auto w-full max-w-[1440px] bg-[#F3F3F3] px-[10px] pb-8 text-[#181818] lg:h-[268px] lg:snap-start lg:pb-0">
+      <div className="relative hidden h-full w-full lg:block">
         <div className="absolute left-[40px] top-0 h-[174px] w-[268px]">
           <Image src="/figma/Logo.png" alt="NICO studio" fill className="object-contain" priority />
         </div>
@@ -48,6 +48,21 @@ export function Footer() {
             © 2026 NICO Studio. All rights reserved.
           </p>
         </div>
+      </div>
+      <div className="flex flex-col items-center pt-6 text-center lg:hidden">
+        <div className="relative h-[72px] w-[111px]">
+          <Image src="/figma/Logo.png" alt="NICO studio" fill className="object-contain" />
+        </div>
+        <p className="mt-7 font-sans text-[14px] leading-[1.5] tracking-[-0.322px] text-[#181818]">
+          Partnering with founders to turn ideas into real products.
+        </p>
+        <a href="mailto:hello@nicolab.studio" className="mt-4 font-sans text-[14px] font-extrabold leading-[33.1px] underline">
+          hello@nicolab.studio
+        </a>
+        <a href="https://x.com/dreava_art" target="_blank" rel="noreferrer" className="mt-1 font-sans text-[14px] leading-[33.1px]">
+          X
+        </a>
+        <p className="mt-4 font-sans text-[14px] leading-[20px] text-[#181818]">© 2026 NICO Studio. All rights reserved.</p>
       </div>
     </footer>
   );

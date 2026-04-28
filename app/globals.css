@@ -8,6 +8,11 @@
   --gold: #ebb55c;
   --accent: var(--gold);
   --accent-rgb: 235 181 92;
+  --mobile-gutter: clamp(12px, 4vw, 20px);
+  --mobile-logo-w: clamp(64px, 19vw, 78px);
+  --mobile-logo-h: clamp(40px, 12vw, 47px);
+  --mobile-menu-size: clamp(38px, 10vw, 44px);
+  --mobile-hero-title-size: clamp(48px, 14.5vw, 60px);
 }
 
 @theme inline {
@@ -19,11 +24,15 @@
 
 html {
   color-scheme: light;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
   background: var(--bg);
   color: var(--foreground);
+  overflow-x: hidden;
+  overflow-x: clip;
   font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
     "Apple Color Emoji", "Segoe UI Emoji";
 }
