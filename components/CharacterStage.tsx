@@ -129,31 +129,30 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
   const active = items[activeIndex];
   const hasPrev = activeIndex > 0;
   const hasNext = activeIndex < items.length - 1;
-  const prev = hasPrev ? items[activeIndex - 1] : null;
-  const next = hasNext ? items[activeIndex + 1] : null;
   const mobileVideoFor = (item: Character | null) => item?.mobileVideoSrc ?? item?.videoSrc;
-  const sideSizeByActive: Record<
+  const mobileHeroLayoutByActive: Record<
     Character["id"],
     {
-      h: number;
-      w: number;
-      xShift: string;
-      y: string;
-      opacity: string;
-      stageH: number;
-      activeScale: number;
-      activeY: number;
-      arcBottom: number;
-      arcH: number;
-      textBottom: number;
+      active: { size: number; left: number; top: number };
     }
   > = {
-    thinker: { h: 320, w: 188, xShift: "22%", y: "44%", opacity: "0.96", stageH: 520, activeScale: 1.2, activeY: 34, arcBottom: -42, arcH: 300, textBottom: 44 },
-    builder: { h: 320, w: 188, xShift: "22%", y: "44%", opacity: "0.96", stageH: 520, activeScale: 1.2, activeY: 34, arcBottom: -42, arcH: 300, textBottom: 44 },
-    creator: { h: 320, w: 188, xShift: "22%", y: "44%", opacity: "0.96", stageH: 520, activeScale: 1.2, activeY: 34, arcBottom: -42, arcH: 300, textBottom: 44 },
-    launcher: { h: 320, w: 188, xShift: "22%", y: "44%", opacity: "0.96", stageH: 520, activeScale: 1.2, activeY: 34, arcBottom: -42, arcH: 300, textBottom: 44 },
+    thinker: {
+      active: { size: 332, left: 30, top: 338 },
+    },
+    builder: {
+      active: { size: 307, left: 42, top: 359 },
+    },
+    creator: {
+      active: { size: 279, left: 56, top: 385 },
+    },
+    launcher: {
+      active: { size: 395, left: -3, top: 337 },
+    },
   };
-  const sideCfg = sideSizeByActive[active.id];
+  const mobileLayout = mobileHeroLayoutByActive[active.id];
+  const toX = (px: number) => `${(px / 390) * 100}%`;
+  const toY = (px: number) => `${(px / 675) * 100}%`;
+  const toSize = (px: number) => `${(px / 390) * 100}%`;
 
   return (
     <div className="relative mx-auto h-full w-full max-w-[1440px]">
@@ -255,8 +254,8 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
       </div>
 
       {/* Mobile / tablet */}
-      <div className="lg:hidden relative mx-auto h-full w-full overflow-visible">
-        <div className="relative z-10 px-4 pt-[clamp(90px,16vh,124px)] text-center">
+      <div className="lg:hidden relative mx-auto h-full w-full overflow-hidden">
+        <div className="absolute inset-x-0 top-[clamp(90px,16vh,124px)] z-20 px-4 text-center">
           <div className="select-none leading-[0.86] tracking-[-0.023em]">
             <div className="font-bold text-[#181818]" style={{ fontFamily: "var(--font-nav)", fontSize: "var(--mobile-hero-title-size)" }}>
               THE
@@ -273,85 +272,54 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
           </div>
         </div>
 
-        <div
-          className="relative z-10 mx-auto mt-0 w-full max-w-[430px] overflow-visible px-2"
-          style={{ height: "clamp(440px, 55vh, 520px)", maxWidth: "min(430px, calc(100vw - 8px))" }}
-        >
-          <div
-            className="pointer-events-none absolute inset-x-[-12px] z-[8] flex -translate-y-1/2 justify-between px-0"
-            style={{ top: sideCfg.y, opacity: Number(sideCfg.opacity) }}
-          >
-            {prev ? (
+        <div className="absolute inset-x-0 top-[-34px] z-10 mx-auto h-[675px] w-full max-w-[390px] overflow-visible">
+          <div className="relative h-full w-full overflow-visible">
+            {reduceMotion ? (
               <div
-                className="relative"
+                className="absolute z-10"
                 style={{
-                  height: sideCfg.h,
-                  width: sideCfg.w,
-                  transform: `translateX(-${sideCfg.xShift})`,
+                  left: toX(mobileLayout.active.left),
+                  top: toY(mobileLayout.active.top),
+                  width: toSize(mobileLayout.active.size),
+                  height: toSize(mobileLayout.active.size),
                 }}
               >
-                <SideCharacterPreview item={prev} />
+                <CharacterVisual fillSlot videoSrc={mobileVideoFor(active)} src={active.imageSrc} id={active.id} reduceMotion />
               </div>
             ) : (
-              <div style={{ width: sideCfg.w }} />
-            )}
-            {next ? (
-              <div
-                className="relative"
-                style={{
-                  height: sideCfg.h,
-                  width: sideCfg.w,
-                  transform: `translateX(${sideCfg.xShift})`,
-                }}
-              >
-                <SideCharacterPreview item={next} />
-              </div>
-            ) : (
-              <div style={{ width: sideCfg.w }} />
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={active.id}
+                  className="absolute z-10"
+                  style={{
+                    left: toX(mobileLayout.active.left),
+                    top: toY(mobileLayout.active.top),
+                    width: toSize(mobileLayout.active.size),
+                    height: toSize(mobileLayout.active.size),
+                  }}
+                  initial={{ opacity: 0.85 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0.82 }}
+                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.14}
+                  onDragEnd={(_, info) => {
+                    const threshold = 40;
+                    if (info.offset.x <= -threshold && hasNext) onSelectIndex?.(activeIndex + 1);
+                    if (info.offset.x >= threshold && hasPrev) onSelectIndex?.(activeIndex - 1);
+                  }}
+                >
+                  <CharacterVisual fillSlot videoSrc={mobileVideoFor(active)} src={active.imageSrc} id={active.id} />
+                </motion.div>
+              </AnimatePresence>
             )}
           </div>
-          {reduceMotion ? (
-            <CharacterVisual
-              videoSrc={mobileVideoFor(active)}
-              src={active.imageSrc}
-              id={active.id}
-              reduceMotion
-              scale={sideCfg.activeScale}
-              translateY={sideCfg.activeY}
-            />
-          ) : (
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={active.id}
-                className="relative z-10"
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.18}
-                onDragEnd={(_, info) => {
-                  const threshold = 40;
-                  if (info.offset.x <= -threshold && hasNext) onSelectIndex?.(activeIndex + 1);
-                  if (info.offset.x >= threshold && hasPrev) onSelectIndex?.(activeIndex - 1);
-                }}
-              >
-                <CharacterVisual
-                  videoSrc={mobileVideoFor(active)}
-                  src={active.imageSrc}
-                  id={active.id}
-                  scale={sideCfg.activeScale}
-                  translateY={sideCfg.activeY}
-                />
-              </motion.div>
-            </AnimatePresence>
-          )}
         </div>
 
-        <div className="absolute inset-x-0 z-20" style={{ bottom: sideCfg.arcBottom }}>
-          <div className="mx-auto w-[140%] -translate-x-[14.5%] rounded-t-[50%] bg-[#F3F3F3]" style={{ height: sideCfg.arcH }} />
-          <div className="absolute inset-x-0 px-5 text-center" style={{ bottom: sideCfg.textBottom }}>
+        <div className="absolute inset-x-0 z-30" style={{ bottom: -18 }}>
+          <div className="mx-auto w-[154.1025641%] -translate-x-[17.051282%] rounded-t-[50%] bg-[#F3F3F3]" style={{ height: 300 }} />
+          <div className="absolute inset-x-0 px-5 text-center" style={{ bottom: 58 }}>
             <div
               className="mx-auto max-w-[260px] text-[25px] font-bold leading-[1.5] tracking-[-0.575px] uppercase"
               style={{ color: active.roleColor ?? "var(--gold)", fontFamily: "var(--font-nav)" }}

@@ -63,10 +63,31 @@ function ConnectModalInner({ onClose }: { onClose: () => void }) {
     if (Object.keys(nextErrors).length > 0) return;
 
     setSubmitting(true);
-    const delay = 800 + Math.floor(Math.random() * 400);
-    await new Promise((r) => setTimeout(r, delay));
-    setSubmitting(false);
-    setSuccess(true);
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          telegram: telegram.trim(),
+          message: message.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        setErrors({ form: "Could not send your message right now. Please try again in a minute." });
+        return;
+      }
+
+      setSuccess(true);
+      setErrors({});
+    } catch {
+      setErrors({ form: "Network error. Please check your connection and try again." });
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   const overlayMotion = reduceMotion
