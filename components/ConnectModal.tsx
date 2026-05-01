@@ -77,7 +77,14 @@ function ConnectModalInner({ onClose }: { onClose: () => void }) {
       });
 
       if (!response.ok) {
-        setErrors({ form: "Could not send your message right now. Please try again in a minute." });
+        const data = (await response.json().catch(() => null)) as { error?: string } | null;
+        const detail = data?.error?.trim();
+        setErrors({
+          form:
+            detail && detail.length > 0
+              ? detail
+              : "Could not send your message right now. Please try again in a minute.",
+        });
         return;
       }
 

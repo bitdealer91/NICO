@@ -14,8 +14,12 @@ function isValidTelegram(value: string) {
   return /^@?[\w\d_]{3,32}$/.test(value);
 }
 
-function escapeTelegramMarkdown(text: string) {
-  return text.replace(/[_*[\]()~`>#+\-=|{}.!]/g, "\\$&");
+function escapeTelegramHtml(text: string) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 async function sendToTelegram(params: {
@@ -25,15 +29,15 @@ async function sendToTelegram(params: {
   telegram: string;
   message: string;
 }) {
-  const textLines = [
-    "*New contact request*",
+  const text = [
+    "<b>New contact request</b>",
     "",
-    `*Email:* ${escapeTelegramMarkdown(params.email || "-")}`,
-    `*Telegram:* ${escapeTelegramMarkdown(params.telegram || "-")}`,
+    `<b>Email:</b> ${escapeTelegramHtml(params.email || "-")}`,
+    `<b>Telegram:</b> ${escapeTelegramHtml(params.telegram || "-")}`,
     "",
-    "*Message:*",
-    escapeTelegramMarkdown(params.message),
-  ];
+    "<b>Message:</b>",
+    escapeTelegramHtml(params.message),
+  ].join("\n");
 
   const response = await fetch(`https://api.telegram.org/bot${params.botToken}/sendMessage`, {
     method: "POST",
@@ -42,8 +46,8 @@ async function sendToTelegram(params: {
     },
     body: JSON.stringify({
       chat_id: params.chatId,
-      text: textLines.join("\n"),
-      parse_mode: "MarkdownV2",
+      text,
+      parse_mode: "HTML",
       disable_web_page_preview: true,
     }),
   });
@@ -121,7 +125,13 @@ export async function POST(request: Request) {
     const emailConfigured = Boolean(resendApiKey && toEmail);
 
     if (!telegramConfigured && !emailConfigured) {
-      return NextResponse.json({ error: "Contact channels are not configured." }, { status: 500 });
+      return NextResponse.json(
+        {
+          error:
+            "Сервер не настроен: задайте TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID и/или RESEND_API_KEY + CONTACT_TO_EMAIL (см. .env.example).",
+        },
+        { status: 500 }
+      );
     }
 
     const tasks: Promise<unknown>[] = [];
