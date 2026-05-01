@@ -141,15 +141,16 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
       {/* Desktop (pixel-ish to Figma) */}
       <div className="hidden h-full lg:block">
         <h1
-          className={[
-            "absolute left-[40px] top-[321px] z-30 select-none",
-            "text-[#181818]",
-            "tracking-[-0.023em] leading-[0.82]",
-          ].join(" ")}
+          className="absolute left-[40px] top-[321px] z-30 select-none text-[#181818]"
+          style={{ fontFamily: "var(--font-nav)" }}
         >
-          <div className="font-display text-[150px]">THE</div>
-          <div className="font-display text-[150px]">LAUNCH</div>
-          <div className="font-display text-[150px]" style={{ color: active.roleColor ?? "var(--gold)" }}>
+          {/* Figma 4:279 / Name Crew: Oswald 120 / 700 / LH 100% / LS -2.76px */}
+          <div className="text-[120px] font-bold leading-[100%] tracking-[-2.76px]">THE</div>
+          <div className="text-[120px] font-bold leading-[100%] tracking-[-2.76px]">LAUNCH</div>
+          <div
+            className="text-[120px] font-bold leading-[100%] tracking-[-2.76px]"
+            style={{ color: active.roleColor ?? "#EBB55C" }}
+          >
             CREW
           </div>
         </h1>
@@ -208,12 +209,15 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
           {reduceMotion ? (
             <>
               <div
-                className="font-display text-[40px] leading-[60px] tracking-[-0.023em]"
-                style={{ color: active.roleColor ?? "var(--gold)" }}
+                className="text-[30px] font-bold uppercase leading-[150%] tracking-[-0.69px]"
+                style={{ fontFamily: "var(--font-nav)", color: active.roleColor ?? "#EBB55C" }}
               >
                 {active.roleTitle}
               </div>
-              <div className="mt-[24px] whitespace-pre-line font-sans text-[25px] leading-[37.5px] tracking-[-0.023em] text-[#181818]">
+              <div
+                className="mt-[39px] whitespace-pre-line text-[25px] font-normal leading-[150%] tracking-[-0.575px] text-[#181818]"
+                style={{ fontFamily: "var(--font-sans)" }}
+              >
                 {active.roleBody.join("\n\n")}
               </div>
             </>
@@ -225,8 +229,8 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-display text-[40px] leading-[60px] tracking-[-0.023em] uppercase"
-                  style={{ color: active.roleColor ?? "var(--gold)" }}
+                  className="text-[30px] font-bold uppercase leading-[150%] tracking-[-0.69px]"
+                  style={{ fontFamily: "var(--font-nav)", color: active.roleColor ?? "#EBB55C" }}
                 >
                   {active.roleTitle}
                 </motion.div>
@@ -235,7 +239,8 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
                   transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1], delay: 0.04 }}
-                  className="mt-[24px] whitespace-pre-line font-sans text-[25px] leading-[37.5px] tracking-[-0.023em] text-[#181818]"
+                  className="mt-[39px] whitespace-pre-line text-[25px] font-normal leading-[150%] tracking-[-0.575px] text-[#181818]"
+                  style={{ fontFamily: "var(--font-sans)" }}
                 >
                   {active.roleBody.join("\n\n")}
                 </motion.div>
