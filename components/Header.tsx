@@ -294,11 +294,11 @@ export function Header() {
             </p>
 
             <a
-              href="mailto:hello@nico.studio.com"
+              href="mailto:bitdealer91@gmail.com"
               className="absolute bottom-3 left-4 text-[14px] font-normal leading-[33.1px] text-white underline"
               style={{ fontFamily: "var(--font-sans)" }}
             >
-              hello@nico.studio.com
+              bitdealer91@gmail.com
             </a>
             <a
               href="https://x.com/nico_studio_"
