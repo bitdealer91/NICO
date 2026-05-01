@@ -19,8 +19,6 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 html {
@@ -56,8 +54,7 @@ h6 {
 }
 
 .font-accent {
-  font-family: var(--font-display), var(--font-sans), ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
-    Helvetica, Arial;
+  font-family: var(--font-accent), var(--font-sans), ui-serif, serif;
 }
 
 @media (prefers-reduced-motion: no-preference) {

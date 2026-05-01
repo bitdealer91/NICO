@@ -149,7 +149,7 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
         >
           <div className="font-display text-[150px]">THE</div>
           <div className="font-display text-[150px]">LAUNCH</div>
-          <div className="font-accent text-[150px]" style={{ color: active.roleColor ?? "var(--gold)" }}>
+          <div className="font-display text-[150px]" style={{ color: active.roleColor ?? "var(--gold)" }}>
             CREW
           </div>
         </h1>

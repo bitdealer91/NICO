@@ -29,15 +29,20 @@ export const metadata: Metadata = {
   title: "NICO studio",
   description: "NICO studio — The Launch Crew",
   icons: {
-    icon: "/figma/logonico.jpg",
-    shortcut: "/figma/logonico.jpg",
-    apple: "/figma/logonico.jpg",
+    icon: [{ url: "/favicon.png", type: "image/png", sizes: "512x512" }],
+    shortcut: "/favicon.png",
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
 };
 
 /** Не использовать тёмную color-scheme ОС для canvas/формы/скроллбаров страницы. */
 export const viewport: Viewport = {
   colorScheme: "light",
+  /** Не давать браузерам/In-App WebView (X/Telegram и т.д.) красить панели в чёрный при тёмной теме клиента */
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f3f3f3" },
+    { media: "(prefers-color-scheme: dark)", color: "#f3f3f3" },
+  ],
 };
 
 export default function RootLayout({
