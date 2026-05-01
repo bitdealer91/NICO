@@ -154,14 +154,7 @@ export function Header() {
           {/* Desktop (Figma layout) */}
           <div className="hidden lg:block">
             <div className="absolute left-[40px] top-[42px]">
-              <Image
-                src="/logonico.png"
-                alt="NICO studio"
-                width={131}
-                height={131}
-                className="h-[85px] w-auto max-w-[131px] object-contain object-left"
-                priority
-              />
+              <Image src="/figma/logo.png" alt="NICO studio" width={131} height={85} priority />
             </div>
 
             <nav
@@ -209,7 +202,7 @@ export function Header() {
                   height: "var(--mobile-logo-h)",
                 }}
               >
-                <Image src="/logonico.png" alt="NICO studio" fill className="object-contain object-left" />
+                <Image src="/figma/logo.png" alt="NICO studio" fill className="object-contain object-left" />
               </div>
             </div>
           </div>
@@ -246,7 +239,7 @@ export function Header() {
                 top: "calc(var(--mobile-gutter) + env(safe-area-inset-top))",
               }}
             >
-              <Image src="/logonico.png" alt="NICO studio" fill className="object-contain object-left invert" />
+              <Image src="/figma/logo.png" alt="NICO studio" fill className="object-contain object-left invert" />
             </div>
 
             <button
