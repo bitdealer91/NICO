@@ -57,7 +57,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className="bg-[#F3F3F3] text-[#181818]"
+      style={{ backgroundColor: "#f3f3f3", colorScheme: "only light" }}
+      suppressHydrationWarning
+    >
       <head>
         <meta name="color-scheme" content="only light" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -66,7 +71,8 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
       </head>
       <body
-        className={`${manrope.variable} ${bebasNeue.variable} ${abhaya.variable} ${oswald.variable} antialiased bg-[var(--bg)] text-[var(--foreground)]`}
+        className={`${manrope.variable} ${bebasNeue.variable} ${abhaya.variable} ${oswald.variable} antialiased`}
+        style={{ backgroundColor: "#f3f3f3", color: "#181818" }}
       >
         {children}
       </body>
