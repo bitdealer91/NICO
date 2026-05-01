@@ -54,7 +54,14 @@ async function sendToTelegram(params: {
 
   if (!response.ok) {
     const details = await response.text();
-    throw new Error(`Telegram send failed: ${details}`);
+    let hint = details;
+    try {
+      const j = JSON.parse(details) as { description?: string };
+      if (j.description) hint = j.description;
+    } catch {
+      /* сырое тело ответа */
+    }
+    throw new Error(`TELEGRAM_API: ${hint}`);
   }
 }
 
@@ -91,7 +98,14 @@ async function sendToEmail(params: {
 
   if (!response.ok) {
     const details = await response.text();
-    throw new Error(`Email send failed: ${details}`);
+    let hint = details.slice(0, 500);
+    try {
+      const j = JSON.parse(details) as { message?: string };
+      if (j.message) hint = j.message;
+    } catch {
+      /* raw */
+    }
+    throw new Error(`RESEND_API: ${hint}`);
   }
 }
 
@@ -115,11 +129,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid Telegram username." }, { status: 400 });
     }
 
-    const botToken = process.env.TELEGRAM_BOT_TOKEN ?? "";
-    const chatId = process.env.TELEGRAM_CHAT_ID ?? "";
-    const resendApiKey = process.env.RESEND_API_KEY ?? "";
-    const toEmail = process.env.CONTACT_TO_EMAIL ?? "";
-    const fromEmail = process.env.CONTACT_FROM_EMAIL ?? "onboarding@resend.dev";
+    const botToken = (process.env.TELEGRAM_BOT_TOKEN ?? "").trim();
+    const chatId = (process.env.TELEGRAM_CHAT_ID ?? "").trim();
+    const resendApiKey = (process.env.RESEND_API_KEY ?? "").trim();
+    const toEmail = (process.env.CONTACT_TO_EMAIL ?? "").trim();
+    const fromEmail = (process.env.CONTACT_FROM_EMAIL ?? "onboarding@resend.dev").trim();
 
     const telegramConfigured = Boolean(botToken && chatId);
     const emailConfigured = Boolean(resendApiKey && toEmail);
@@ -146,6 +160,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("Contact form submit failed", error);
-    return NextResponse.json({ error: "Failed to submit contact request." }, { status: 500 });
+    let detail = "Не удалось отправить заявку. Проверьте переменные окружения и лог сервера.";
+    if (error instanceof Error && error.message) {
+      const m = error.message;
+      if (m.startsWith("TELEGRAM_API:")) {
+        detail = m.replace(/^TELEGRAM_API:\s*/, "").slice(0, 400);
+      } else if (m.startsWith("RESEND_API:")) {
+        detail = `Почта: ${m.replace(/^RESEND_API:\s*/, "").slice(0, 400)}`;
+      }
+    }
+    return NextResponse.json({ error: detail }, { status: 500 });
   }
 }
