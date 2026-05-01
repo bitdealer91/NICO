@@ -37,6 +37,14 @@ html,
 body {
   background-color: #ffffff !important;
   color: #181818 !important;
+  /* Force Dark иногда вешает фильтр на корень — сбрасываем (не наследуется на детей с собственным filter). */
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+/* Распространяем только светлую схему на всё дерево (UA-стили WebView ломаются иначе). */
+html * {
+  color-scheme: only light !important;
 }
 
 html {
