@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Abhaya_Libre, Bebas_Neue, Manrope, Oswald } from "next/font/google";
+
+import { InAppWebViewPaintFix } from "@/components/InAppWebViewPaintFix";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -65,6 +67,14 @@ export default function RootLayout({
     >
       <head>
         <meta name="color-scheme" content="only light" />
+        {/* Подсказка WebKit/Blink для in-app WebView (X, Instagram и т.д.) */}
+        <meta name="supported-color-schemes" content="light" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "!function(){var b='#f3f3f3',c='#181818',h=document.documentElement;h.style.backgroundColor=b;h.style.colorScheme='only light';h.style.color=c;function t(){document.body&&(document.body.style.backgroundColor=b,document.body.style.colorScheme='only light',document.body.style.color=c)}t();document.addEventListener('DOMContentLoaded',t)}();",
+          }}
+        />
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" />
@@ -74,7 +84,17 @@ export default function RootLayout({
         className={`${manrope.variable} ${bebasNeue.variable} ${abhaya.variable} ${oswald.variable} antialiased`}
         style={{ backgroundColor: "#f3f3f3", color: "#181818" }}
       >
-        {children}
+        <InAppWebViewPaintFix />
+        <div
+          className="min-h-[100dvh] bg-[#f3f3f3] text-[#181818]"
+          style={{
+            backgroundColor: "#f3f3f3",
+            color: "#181818",
+            colorScheme: "only light",
+          }}
+        >
+          {children}
+        </div>
       </body>
     </html>
   );
