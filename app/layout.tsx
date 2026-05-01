@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Abhaya_Libre, Bebas_Neue, Manrope, Oswald } from "next/font/google";
 
 import { InAppWebViewPaintFix } from "@/components/InAppWebViewPaintFix";
+import { OpenInExternalBrowserHint } from "@/components/OpenInExternalBrowserHint";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -85,6 +86,7 @@ export default function RootLayout({
         style={{ backgroundColor: "#ffffff", color: "#181818", colorScheme: "only light" }}
       >
         <InAppWebViewPaintFix />
+        <OpenInExternalBrowserHint />
         <div
           id="nico-app-shell"
           className="nico-app-shell min-h-[100dvh] bg-[var(--bg)] text-[var(--foreground)]"
