@@ -10,28 +10,31 @@ type Character = {
   role: string;
   imageSrc: string;
   colorImageSrc: string;
-  /** Full mobile card raster (includes art + typography). */
+  /** Mobile-only card art (`aboutMob*`), separate from desktop `about-*.png`. */
   mobileCardSrc: string;
 };
 
-/** Carousel card shell: Figma `351:116` instances are exactly 360×500 (corner radius matches `rounded-t-[250px]`). */
+/** Figma `757:519` — each card 360×410, `rounded-t-[250px]`, typography block `757:483…485` family. */
 const MOBILE_CARD_W = 360;
-const MOBILE_CARD_H = 500;
+const MOBILE_CARD_H = 410;
 
-/** Text X + subtle character X from frame `351:116` (`left: calc(50% - …)` in Dev Mode — not symmetric text-center). */
+/** Figma `757:519` typography; horizontal nudge for `mobileCardSrc` raster. */
 const MOBILE_CARD_LAYOUT: Record<
   Character["id"],
-  {
-    titleLeftSubtractPx: number;
-    subtitleLeftSubtractPx: number;
-    /** Horizontal shift of raster vs card center (`351:52…66` × nudge pattern). */
-    charNudgePx: number;
-  }
+  { titleLeftSubtractPx: number; subtitleLeftSubtractPx: number; charNudgePx: number }
 > = {
-  thinker: { titleLeftSubtractPx: 63, subtitleLeftSubtractPx: 44, charNudgePx: -0.5 },
-  builder: { titleLeftSubtractPx: 63, subtitleLeftSubtractPx: 54, charNudgePx: 0 },
-  creator: { titleLeftSubtractPx: 66, subtitleLeftSubtractPx: 50, charNudgePx: 9.5 },
-  launcher: { titleLeftSubtractPx: 73, subtitleLeftSubtractPx: 49, charNudgePx: 18.5 },
+  thinker: { titleLeftSubtractPx: 63.5, subtitleLeftSubtractPx: 44.5, charNudgePx: -0.5 },
+  builder: { titleLeftSubtractPx: 63.5, subtitleLeftSubtractPx: 54.5, charNudgePx: 0 },
+  creator: { titleLeftSubtractPx: 65.5, subtitleLeftSubtractPx: 50.5, charNudgePx: 9.5 },
+  launcher: { titleLeftSubtractPx: 73.5, subtitleLeftSubtractPx: 48.5, charNudgePx: 18.5 },
+};
+
+/** Figma `545:316` / per-card refs (`389:*`) — размеры слота персонажа и сдвиг по X (px). */
+const DESKTOP_CARD_VISUAL: Record<Character["id"], { w: number; h: number; x: number }> = {
+  thinker: { w: 207, h: 358, x: -0.5 },
+  builder: { w: 238, h: 313, x: 0 },
+  creator: { w: 235, h: 340, x: 9.5 },
+  launcher: { w: 241, h: 395, x: 18.5 },
 };
 
 const CHARACTERS: Character[] = [
@@ -130,6 +133,8 @@ function CurvedLoopText({ bandPx = 120, alpha = 0.1 }: { bandPx?: number; alpha?
 }
 
 function CharacterCard({ character }: { character: Character }) {
+  const viz = DESKTOP_CARD_VISUAL[character.id];
+
   return (
     <article
       className="group relative h-[500px] w-[360px] max-w-full overflow-hidden rounded-t-[250px] bg-[#F3F3F3]"
@@ -158,7 +163,10 @@ function CharacterCard({ character }: { character: Character }) {
         </div>
 
         <div className="relative z-10 mt-6 flex w-full flex-1 items-end justify-center pb-4">
-          <div className="relative h-[358px] w-[207px] origin-bottom transform-gpu transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-4 group-hover:scale-[1.05]">
+          <div
+            className="relative origin-bottom transform-gpu transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-4 group-hover:scale-[1.05]"
+            style={{ width: viz.w, height: viz.h, marginLeft: viz.x }}
+          >
             <Image
               src={character.imageSrc}
               alt=""
@@ -269,9 +277,12 @@ export function Sections() {
 
         <div
           ref={cardsRef}
-          className="relative z-10 mx-auto mt-[60px] hidden w-full max-w-[1440px] px-10 lg:block"
+          className="relative z-10 mx-auto mt-[60px] hidden w-full max-w-[1520px] px-10 lg:block"
         >
-          <div className="grid gap-y-10 gap-x-0 md:grid-cols-2 xl:grid-cols-4 xl:gap-x-0">
+          {/*
+            Контент 1440 (= 4×360): при max-w-[1440px]+px-10 ячейка ~340 и крайний столбец «плывёт». 1520 = 1440+80 паддингов.
+           */}
+          <div className="grid justify-items-center gap-x-0 gap-y-10 md:grid-cols-2 xl:grid-cols-4">
             {CHARACTERS.map((character) => (
               <div key={character.id} className="flex justify-center">
                 <CharacterCard character={character} />
@@ -313,7 +324,7 @@ export function Sections() {
             <CurvedLoopText bandPx={50} alpha={0.1} />
           </motion.div>
 
-          <div ref={mobileCardsRef} className="mt-3 -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2">
+          <div ref={mobileCardsRef} className="mt-3 -mx-4 flex snap-x snap-mandatory gap-[10px] overflow-x-auto px-4 pb-2">
             {CHARACTERS.map((character) => {
               const layout = MOBILE_CARD_LAYOUT[character.id];
               return (
@@ -321,28 +332,26 @@ export function Sections() {
                   key={character.id}
                   className="relative isolate shrink-0 snap-center overflow-hidden rounded-t-[250px] bg-[#181818]"
                   style={{ width: MOBILE_CARD_W, height: MOBILE_CARD_H }}
+                  aria-label={`${character.name} – ${character.role}`}
                 >
-                  <h3
-                    className="pointer-events-none absolute z-20 -translate-y-1/2 whitespace-nowrap text-left text-[25px] font-bold leading-none tracking-[-0.575px] text-white"
-                    style={{
-                      fontFamily: "var(--font-nav)",
-                      top: 152.5,
-                      left: `calc(50% - ${layout.titleLeftSubtractPx}px)`,
-                    }}
-                  >
-                    {character.name}
-                  </h3>
-                  <p
-                    className="pointer-events-none absolute z-20 -translate-y-1/2 whitespace-nowrap text-left font-sans text-[14px] leading-[1.5] tracking-[-0.322px] text-white"
-                    style={{
-                      top: 191.5,
-                      left: `calc(50% - ${layout.subtitleLeftSubtractPx}px)`,
-                    }}
-                  >
-                    {character.role}
-                  </p>
-                  {/* Space below typography (~239 in Figma) through card bottom — object-contain so full raster fits (no clipping from object-cover slots). */}
-                  <div className="pointer-events-none absolute inset-x-[14px] bottom-3 top-[236px] z-10 flex items-end justify-center">
+                  <div className="pointer-events-none absolute left-[116px] top-[50px] z-20 h-[62px] w-[127px] leading-[0] text-white">
+                    <h3
+                      className="absolute top-[12.5px] -translate-y-1/2 whitespace-nowrap text-left text-[25px] font-bold leading-none tracking-[-0.575px]"
+                      style={{
+                        left: `calc(50% - ${layout.titleLeftSubtractPx}px)`,
+                        fontFamily: "var(--font-nav)",
+                      }}
+                    >
+                      {character.name}
+                    </h3>
+                    <p
+                      className="absolute top-[51.5px] -translate-y-1/2 whitespace-nowrap text-left font-sans text-[14px] leading-[1.5] tracking-[-0.322px]"
+                      style={{ left: `calc(50% - ${layout.subtitleLeftSubtractPx}px)` }}
+                    >
+                      {character.role}
+                    </p>
+                  </div>
+                  <div className="pointer-events-none absolute inset-x-[14px] bottom-0 top-[146px] z-10 flex items-end justify-center">
                     <div
                       className="relative h-full w-full"
                       style={{ transform: `translateX(${layout.charNudgePx}px)` }}
@@ -352,7 +361,7 @@ export function Sections() {
                         alt=""
                         fill
                         sizes={`${MOBILE_CARD_W}px`}
-                        className="object-contain object-bottom"
+                        className="object-contain object-bottom select-none"
                         priority={character.id === "thinker"}
                       />
                     </div>

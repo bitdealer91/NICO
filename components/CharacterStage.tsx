@@ -7,6 +7,9 @@ import { useMemo, useState } from "react";
 import type { Character } from "@/lib/characters";
 import { ArcNav } from "@/components/ArcNav";
 
+/** Как в ContactSection — мягкая «платформа» под видео-персонажа. */
+const HERO_ELLIPSE_SHADOW_SRC = "/figma/Ellipse%2027.png";
+
 type CharacterStageProps = {
   items: Character[];
   activeIndex: number;
@@ -152,38 +155,52 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
         </h1>
 
         {/* Figma 4:279 — `424:1013`: (306, 82) 840×840 on 1440×900; scale x/w with container, fixed top */}
-        <div className="absolute left-[21.25%] top-[82px] z-10 aspect-square w-[58.3333333%] max-w-[840px]">
-          {reduceMotion ? (
-            <CharacterVisual
-              fillSlot
-              videoSrc={active.videoSrc}
-              src={active.imageSrc}
-              id={active.id}
-              reduceMotion
-              scale={active.stageScale}
-              translateY={active.stageTranslateY}
+        <div className="absolute left-[21.25%] top-[82px] z-10 w-[58.3333333%] max-w-[840px]">
+          <div className="relative aspect-square w-full">
+            {reduceMotion ? (
+              <CharacterVisual
+                fillSlot
+                videoSrc={active.videoSrc}
+                src={active.imageSrc}
+                id={active.id}
+                reduceMotion
+                scale={active.stageScale}
+                translateY={active.stageTranslateY}
+              />
+            ) : (
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={active.id}
+                  className="h-full w-full"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <CharacterVisual
+                    fillSlot
+                    videoSrc={active.videoSrc}
+                    src={active.imageSrc}
+                    id={active.id}
+                    scale={active.stageScale}
+                    translateY={active.stageTranslateY}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            )}
+          </div>
+          <div className="pointer-events-none relative z-[1] -mt-12 flex w-full justify-center px-2 lg:-mt-[60px]" aria-hidden>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={HERO_ELLIPSE_SHADOW_SRC}
+              alt=""
+              width={662}
+              height={74}
+              decoding="async"
+              className="pointer-events-none mx-auto block h-auto w-[min(138%,940px)] max-w-none -translate-y-3 select-none opacity-[0.48] [filter:saturate(1)_brightness(0.93)_contrast(1.04)] will-change-transform lg:-translate-y-3.5"
+              style={{ mixBlendMode: "darken" }}
             />
-          ) : (
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={active.id}
-                className="h-full w-full"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <CharacterVisual
-                  fillSlot
-                  videoSrc={active.videoSrc}
-                  src={active.imageSrc}
-                  id={active.id}
-                  scale={active.stageScale}
-                  translateY={active.stageTranslateY}
-                />
-              </motion.div>
-            </AnimatePresence>
-          )}
+          </div>
         </div>
 
         {/* Figma `49:1148` Crew info: (1144, 325) w=261 on 1440 canvas */}

@@ -301,7 +301,7 @@ export function Header() {
               hello@nico.studio.com
             </a>
             <a
-              href="https://x.com/dreava_art"
+              href="https://x.com/nico_studio_"
               target="_blank"
               rel="noreferrer"
               className="absolute bottom-3 right-5 text-[14px] font-normal leading-[33.1px] text-white"

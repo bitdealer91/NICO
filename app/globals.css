@@ -24,12 +24,14 @@
 }
 
 html {
-  color-scheme: light;
+  /* «light only»: не даём браузеру включать оформление под prefers-color-scheme: dark */
+  color-scheme: light only;
   overflow-x: hidden;
   overflow-x: clip;
 }
 
 body {
+  color-scheme: light only;
   background: var(--bg);
   color: var(--foreground);
   overflow-x: hidden;
@@ -73,5 +75,20 @@ h6 {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+}
+
+/* Страница задумана только в светлых цветах; при тёмной ОС переопределения браузера не ломают макет */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #f3f3f3;
+    --background: #f3f3f3;
+    --foreground: #181818;
+  }
+
+  html,
+  body {
+    background-color: #f3f3f3;
+    color: #181818;
   }
 }

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Abhaya_Libre, Bebas_Neue, Manrope, Oswald } from "next/font/google";
 import "./globals.css";
 
@@ -29,10 +29,15 @@ export const metadata: Metadata = {
   title: "NICO studio",
   description: "NICO studio — The Launch Crew",
   icons: {
-    icon: "/figma/logo.png",
-    shortcut: "/figma/logo.png",
-    apple: "/figma/logo.png",
+    icon: "/figma/logonico.jpg",
+    shortcut: "/figma/logonico.jpg",
+    apple: "/figma/logonico.jpg",
   },
+};
+
+/** Не использовать тёмную color-scheme ОС для canvas/формы/скроллбаров страницы. */
+export const viewport: Viewport = {
+  colorScheme: "light",
 };
 
 export default function RootLayout({
