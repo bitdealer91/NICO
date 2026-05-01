@@ -12,7 +12,8 @@
   --mobile-logo-w: clamp(64px, 19vw, 78px);
   --mobile-logo-h: clamp(40px, 12vw, 47px);
   --mobile-menu-size: clamp(38px, 10vw, 44px);
-  --mobile-hero-title-size: clamp(48px, 14.5vw, 60px);
+  /* Mobile hero headline (phone frame 390 in Figma) */
+  --mobile-hero-title-size: clamp(48px, calc(60 * 100vw / 390), 68px);
 }
 
 @theme inline {

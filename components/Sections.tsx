@@ -10,6 +10,28 @@ type Character = {
   role: string;
   imageSrc: string;
   colorImageSrc: string;
+  /** Full mobile card raster (includes art + typography). */
+  mobileCardSrc: string;
+};
+
+/** Carousel card shell: Figma `351:116` instances are exactly 360×500 (corner radius matches `rounded-t-[250px]`). */
+const MOBILE_CARD_W = 360;
+const MOBILE_CARD_H = 500;
+
+/** Text X + subtle character X from frame `351:116` (`left: calc(50% - …)` in Dev Mode — not symmetric text-center). */
+const MOBILE_CARD_LAYOUT: Record<
+  Character["id"],
+  {
+    titleLeftSubtractPx: number;
+    subtitleLeftSubtractPx: number;
+    /** Horizontal shift of raster vs card center (`351:52…66` × nudge pattern). */
+    charNudgePx: number;
+  }
+> = {
+  thinker: { titleLeftSubtractPx: 63, subtitleLeftSubtractPx: 44, charNudgePx: -0.5 },
+  builder: { titleLeftSubtractPx: 63, subtitleLeftSubtractPx: 54, charNudgePx: 0 },
+  creator: { titleLeftSubtractPx: 66, subtitleLeftSubtractPx: 50, charNudgePx: 9.5 },
+  launcher: { titleLeftSubtractPx: 73, subtitleLeftSubtractPx: 49, charNudgePx: 18.5 },
 };
 
 const CHARACTERS: Character[] = [
@@ -19,6 +41,7 @@ const CHARACTERS: Character[] = [
     role: "Product Vision",
     imageSrc: "/figma/about-thinker.png",
     colorImageSrc: "/figma/about-thinker@2x.png",
+    mobileCardSrc: "/figma/aboutMobThinker.png",
   },
   {
     id: "builder",
@@ -26,6 +49,7 @@ const CHARACTERS: Character[] = [
     role: "Scalable Systems",
     imageSrc: "/figma/about-builder.png",
     colorImageSrc: "/figma/about-builder@2x.png",
+    mobileCardSrc: "/figma/aboutMobBuilder.png",
   },
   {
     id: "creator",
@@ -33,6 +57,7 @@ const CHARACTERS: Character[] = [
     role: "User Experience",
     imageSrc: "/figma/about-creator.png",
     colorImageSrc: "/figma/about-creator@2x.png",
+    mobileCardSrc: "/figma/aboutMobCreator.png",
   },
   {
     id: "launcher",
@@ -40,6 +65,7 @@ const CHARACTERS: Character[] = [
     role: "Product Launch",
     imageSrc: "/figma/about-launcher.png",
     colorImageSrc: "/figma/about-launcher@2x.png",
+    mobileCardSrc: "/figma/aboutMobLauncher.png",
   },
 ];
 
@@ -180,7 +206,7 @@ export function Sections() {
   const mobileMarqueeHeight = useTransform(mobileCardsProgress, [0, 0.85], [50, 0]);
 
   return (
-    <div className="relative overflow-hidden bg-[#F3F3F3] text-[#181818]">
+    <div className="relative z-10 overflow-hidden bg-[#F3F3F3] text-[#181818]">
       <section id="about" className="relative w-full flex-col pb-0 pt-10 lg:min-h-0 lg:snap-start lg:pb-0 lg:pt-14">
         <div className="relative z-10 mx-auto hidden w-full max-w-[1440px] flex-col px-10 lg:flex">
           {/* Figma: thinker decoration on the left, rotated right and partially clipped */}
@@ -288,25 +314,52 @@ export function Sections() {
           </motion.div>
 
           <div ref={mobileCardsRef} className="mt-3 -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2">
-            {CHARACTERS.map((character) => (
-              <article
-                key={character.id}
-                className="relative h-[500px] min-w-[calc(100vw-32px)] max-w-[360px] snap-center overflow-hidden rounded-t-[250px] bg-[#181818]"
-              >
-                <h3
-                  className="pt-[48px] text-center text-[25px] font-bold leading-none tracking-[-0.575px] text-white"
-                  style={{ fontFamily: "var(--font-nav)" }}
+            {CHARACTERS.map((character) => {
+              const layout = MOBILE_CARD_LAYOUT[character.id];
+              return (
+                <article
+                  key={character.id}
+                  className="relative isolate shrink-0 snap-center overflow-hidden rounded-t-[250px] bg-[#181818]"
+                  style={{ width: MOBILE_CARD_W, height: MOBILE_CARD_H }}
                 >
-                  {character.name}
-                </h3>
-                <p className="mt-2 text-center font-sans text-[14px] leading-[1.5] tracking-[-0.322px] text-white">{character.role}</p>
-                <div className="absolute inset-x-0 bottom-0 top-[180px] flex items-end justify-center">
-                  <div className="relative h-[358px] w-[207px]">
-                    <Image src={character.colorImageSrc} alt="" fill sizes="207px" className="object-contain object-bottom" />
+                  <h3
+                    className="pointer-events-none absolute z-20 -translate-y-1/2 whitespace-nowrap text-left text-[25px] font-bold leading-none tracking-[-0.575px] text-white"
+                    style={{
+                      fontFamily: "var(--font-nav)",
+                      top: 152.5,
+                      left: `calc(50% - ${layout.titleLeftSubtractPx}px)`,
+                    }}
+                  >
+                    {character.name}
+                  </h3>
+                  <p
+                    className="pointer-events-none absolute z-20 -translate-y-1/2 whitespace-nowrap text-left font-sans text-[14px] leading-[1.5] tracking-[-0.322px] text-white"
+                    style={{
+                      top: 191.5,
+                      left: `calc(50% - ${layout.subtitleLeftSubtractPx}px)`,
+                    }}
+                  >
+                    {character.role}
+                  </p>
+                  {/* Space below typography (~239 in Figma) through card bottom — object-contain so full raster fits (no clipping from object-cover slots). */}
+                  <div className="pointer-events-none absolute inset-x-[14px] bottom-3 top-[236px] z-10 flex items-end justify-center">
+                    <div
+                      className="relative h-full w-full"
+                      style={{ transform: `translateX(${layout.charNudgePx}px)` }}
+                    >
+                      <Image
+                        src={character.mobileCardSrc}
+                        alt=""
+                        fill
+                        sizes={`${MOBILE_CARD_W}px`}
+                        className="object-contain object-bottom"
+                        priority={character.id === "thinker"}
+                      />
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>

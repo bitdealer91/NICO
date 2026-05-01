@@ -130,32 +130,11 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
   const hasPrev = activeIndex > 0;
   const hasNext = activeIndex < items.length - 1;
   const mobileVideoFor = (item: Character | null) => item?.mobileVideoSrc ?? item?.videoSrc;
-  const mobileHeroLayoutByActive: Record<
-    Character["id"],
-    {
-      active: { size: number; left: number; top: number };
-    }
-  > = {
-    thinker: {
-      active: { size: 332, left: 30, top: 338 },
-    },
-    builder: {
-      active: { size: 307, left: 42, top: 359 },
-    },
-    creator: {
-      active: { size: 279, left: 56, top: 385 },
-    },
-    launcher: {
-      active: { size: 395, left: -3, top: 337 },
-    },
-  };
-  const mobileLayout = mobileHeroLayoutByActive[active.id];
-  const toX = (px: number) => `${(px / 390) * 100}%`;
-  const toY = (px: number) => `${(px / 675) * 100}%`;
-  const toSize = (px: number) => `${(px / 390) * 100}%`;
+  /** Figma phone (390) → scale: multiply px by (100vw/390). */
+  const m = (px: number) => `calc(${px} * (100vw / 390))`;
 
   return (
-    <div className="relative mx-auto h-full w-full max-w-[1440px]">
+    <div className="relative mx-auto flex h-full min-h-0 w-full max-w-[1440px] flex-1 flex-col lg:block lg:flex-none">
       {/* Desktop (pixel-ish to Figma) */}
       <div className="hidden h-full lg:block">
         <h1
@@ -253,9 +232,9 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
         </div>
       </div>
 
-      {/* Mobile / tablet */}
-      <div className="lg:hidden relative mx-auto h-full w-full overflow-hidden">
-        <div className="absolute inset-x-0 top-[clamp(90px,16vh,124px)] z-20 px-4 text-center">
+      {/* Mobile — Figma `261:33` phone: Visual `750:454` (601×898), Circle `261:450` white circle on #f3f3f3 (arc = circle edge) */}
+      <div className="relative flex min-h-0 min-w-0 w-full flex-1 flex-col lg:hidden">
+        <div className="relative z-20 shrink-0 px-[var(--mobile-gutter)] text-center" style={{ paddingTop: m(120) }}>
           <div className="select-none leading-[0.86] tracking-[-0.023em]">
             <div className="font-bold text-[#181818]" style={{ fontFamily: "var(--font-nav)", fontSize: "var(--mobile-hero-title-size)" }}>
               THE
@@ -272,77 +251,125 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
           </div>
         </div>
 
-        <div className="absolute inset-x-0 top-[-34px] z-10 mx-auto h-[675px] w-full max-w-[390px] overflow-visible">
-          <div className="relative h-full w-full overflow-visible">
-            {reduceMotion ? (
+        {/* Gap Title → Visual */}
+        <div className="relative z-10 flex min-h-0 w-full flex-1 flex-col justify-end" style={{ paddingTop: m(27) }}>
+          {/* Visual: ширина > viewport — без overflow-* на родителях hero, чтобы не резать края арта (html/body режут только ось X) */}
+          <div className="relative left-1/2 shrink-0 overflow-visible -translate-x-1/2" style={{ width: m(601) }}>
+            {/* Character: overlap with arc; если arcLower отодвигает CircleBlock вниз — mb компенсирует */}
+            <div
+              className="relative z-[1] mx-auto flex justify-center overflow-visible"
+              style={{
+                width: m(398),
+                marginTop: m(-43),
+                marginBottom: m(-102),
+              }}
+            >
+                {reduceMotion ? (
+                  <div className="w-full">
+                    <CharacterVisual
+                      fillSlot
+                      videoSrc={mobileVideoFor(active)}
+                      src={active.imageSrc}
+                      id={active.id}
+                      reduceMotion
+                      scale={active.stageScale}
+                      translateY={active.stageTranslateY}
+                    />
+                  </div>
+                ) : (
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={active.id}
+                      className="w-full"
+                      initial={{ opacity: 0.85 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0.82 }}
+                      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                      drag="x"
+                      dragConstraints={{ left: 0, right: 0 }}
+                      dragElastic={0.14}
+                      onDragEnd={(_, info) => {
+                        const threshold = 40;
+                        if (info.offset.x <= -threshold && hasNext) onSelectIndex?.(activeIndex + 1);
+                        if (info.offset.x >= threshold && hasPrev) onSelectIndex?.(activeIndex - 1);
+                      }}
+                    >
+                      <CharacterVisual
+                        fillSlot
+                        videoSrc={mobileVideoFor(active)}
+                        src={active.imageSrc}
+                        id={active.id}
+                        scale={active.stageScale}
+                        translateY={active.stageTranslateY}
+                      />
+                    </motion.div>
+                  </AnimatePresence>
+                )}
+            </div>
+
+            {/* CircleBlock: текст в потоке задаёт высоту; ниже только фон + диск режутся overflow-hidden */}
+            <div
+              className="pointer-events-none relative z-[15] mx-auto shrink-0 overflow-visible"
+              style={{ width: m(601), transform: `translateY(${m(28)})` }}
+            >
               <div
-                className="absolute z-10"
+                className="relative z-20 mx-auto flex w-full max-w-[100%] flex-col items-center text-center pointer-events-none"
                 style={{
-                  left: toX(mobileLayout.active.left),
-                  top: toY(mobileLayout.active.top),
-                  width: toSize(mobileLayout.active.size),
-                  height: toSize(mobileLayout.active.size),
+                  paddingTop: m(78),
+                  paddingBottom: `max(${m(20)}, calc(env(safe-area-inset-bottom, 0px) + ${m(12)}))`,
+                  paddingLeft: m(170),
+                  paddingRight: m(170),
                 }}
               >
-                <CharacterVisual fillSlot videoSrc={mobileVideoFor(active)} src={active.imageSrc} id={active.id} reduceMotion />
+                <div className="pointer-events-auto w-full" style={{ maxWidth: m(261) }}>
+                  <div
+                    className="font-bold leading-[1.5] tracking-[-0.575px] uppercase"
+                    style={{
+                      color: active.roleColor ?? "var(--gold)",
+                      fontFamily: "var(--font-nav)",
+                      fontSize: m(25),
+                    }}
+                  >
+                    {active.roleTitle}
+                  </div>
+                  <div
+                    className="mx-auto mt-3 max-w-full whitespace-pre-line font-sans leading-[1.5] tracking-[-0.322px] text-[#181818]"
+                    style={{ fontSize: m(14) }}
+                  >
+                    {active.roleBody.join("\n\n")}
+                  </div>
+                  <div className="mt-4 flex items-center justify-center gap-2.5">
+                    {items.map((item, idx) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => onSelectIndex?.(idx)}
+                        className={[
+                          "h-2.5 w-2.5 rounded-full transition-all duration-200",
+                          idx === activeIndex ? "bg-[#181818] scale-110" : "bg-[#181818]/30",
+                        ].join(" ")}
+                        aria-label={`Go to ${item.navLabel}`}
+                        aria-current={idx === activeIndex ? "true" : undefined}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
-            ) : (
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.div
-                  key={active.id}
-                  className="absolute z-10"
-                  style={{
-                    left: toX(mobileLayout.active.left),
-                    top: toY(mobileLayout.active.top),
-                    width: toSize(mobileLayout.active.size),
-                    height: toSize(mobileLayout.active.size),
-                  }}
-                  initial={{ opacity: 0.85 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0.82 }}
-                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                  drag="x"
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={0.14}
-                  onDragEnd={(_, info) => {
-                    const threshold = 40;
-                    if (info.offset.x <= -threshold && hasNext) onSelectIndex?.(activeIndex + 1);
-                    if (info.offset.x >= threshold && hasPrev) onSelectIndex?.(activeIndex - 1);
-                  }}
-                >
-                  <CharacterVisual fillSlot videoSrc={mobileVideoFor(active)} src={active.imageSrc} id={active.id} />
-                </motion.div>
-              </AnimatePresence>
-            )}
-          </div>
-        </div>
 
-        <div className="absolute inset-x-0 z-30" style={{ bottom: -18 }}>
-          <div className="mx-auto w-[154.1025641%] -translate-x-[17.051282%] rounded-t-[50%] bg-[#F3F3F3]" style={{ height: 300 }} />
-          <div className="absolute inset-x-0 px-5 text-center" style={{ bottom: 58 }}>
-            <div
-              className="mx-auto max-w-[260px] text-[25px] font-bold leading-[1.5] tracking-[-0.575px] uppercase"
-              style={{ color: active.roleColor ?? "var(--gold)", fontFamily: "var(--font-nav)" }}
-            >
-              {active.roleTitle}
-            </div>
-            <div className="mx-auto mt-4 max-w-[193px] whitespace-pre-line font-sans text-[14px] leading-[1.5] tracking-[-0.322px] text-[#181818]">
-              {active.roleBody.join("\n\n")}
-            </div>
-            <div className="mt-5 flex items-center justify-center gap-2.5">
-              {items.map((item, idx) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => onSelectIndex?.(idx)}
-                  className={[
-                    "h-2.5 w-2.5 rounded-full transition-all duration-200",
-                    idx === activeIndex ? "bg-[#181818] scale-110" : "bg-[#181818]/30",
-                  ].join(" ")}
-                  aria-label={`Go to ${item.navLabel}`}
-                  aria-current={idx === activeIndex ? "true" : undefined}
-                />
-              ))}
+              <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
+                <div
+                  className="pointer-events-none absolute left-1/2 top-0 z-[5] aspect-square max-w-none -translate-x-1/2"
+                  style={{ width: m(601) }}
+                >
+                  <Image
+                    src="/figma/hero-mobile-circle.svg"
+                    alt=""
+                    fill
+                    sizes="602px"
+                    className="select-none object-cover"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>

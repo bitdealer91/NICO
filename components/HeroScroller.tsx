@@ -69,12 +69,26 @@ export function HeroScroller() {
   }, [accent, accentRgb]);
 
   return (
-    <section ref={sectionRef} className={isDesktop ? "relative h-[400vh] lg:snap-start" : "relative h-screen overflow-x-hidden overflow-y-visible"} aria-label="Hero">
+    <section
+      ref={sectionRef}
+      className={
+        isDesktop
+          ? "relative h-[400vh] lg:snap-start"
+          : "relative isolate z-[35] min-h-[100svh] min-w-0"
+      }
+      aria-label="Hero"
+    >
       {/* Sticky hero */}
-      <div className={isDesktop ? "sticky top-0 h-screen overflow-hidden bg-[#F3F3F3]" : "h-screen overflow-x-hidden overflow-y-visible bg-[#F3F3F3]"}>
+      <div
+        className={
+          isDesktop
+            ? "sticky top-0 h-screen overflow-hidden bg-[#F3F3F3]"
+            : "flex min-h-[100svh] min-w-0 flex-col bg-[#F3F3F3]"
+        }
+      >
         <Header />
 
-        <div className="relative z-10 h-full">
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col lg:h-full lg:flex-none">
           <CharacterStage
             items={characters}
             activeIndex={activeIndex}
