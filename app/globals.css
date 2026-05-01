@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 :root {
+  /* Подсказка Blink/WebKit: страница не объявляет тёмную схему (дополнение к meta/viewport color-scheme). */
+  supported-color-schemes: light;
   /* Site canvas (Figma) */
   --bg: #f3f3f3;
   --background: var(--bg);
@@ -22,6 +24,8 @@
 }
 
 html {
+  /* Явный фон — иначе в тёмной теме браузера/оболочке просвечивает системная подложка (вид «чёрного» первого экрана). */
+  background-color: #f3f3f3;
   /* «light only»: не даём браузеру включать оформление под prefers-color-scheme: dark */
   color-scheme: light only;
   overflow-x: hidden;
@@ -87,5 +91,9 @@ h6 {
   body {
     background-color: #f3f3f3;
     color: #181818;
+  }
+
+  html {
+    color-scheme: light only;
   }
 }

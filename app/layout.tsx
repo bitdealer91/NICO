@@ -26,8 +26,10 @@ const oswald = Oswald({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://nicolab.studio"),
   title: "NICO studio",
   description: "NICO studio — The Launch Crew",
+  /** Дублируем в явном `<head>` — часть мобильных браузеров лучше подхватывает статические `<link rel="icon">`. */
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
@@ -40,7 +42,8 @@ export const metadata: Metadata = {
 
 /** Не использовать тёмную color-scheme ОС для canvas/формы/скроллбаров страницы. */
 export const viewport: Viewport = {
-  colorScheme: "light",
+  /** Сильнее, чем `light`: не даём двойное оформление под тёмную ОС (Samsung Internet и др.). */
+  colorScheme: "only light",
   /** Не давать браузерам/In-App WebView (X/Telegram и т.д.) красить панели в чёрный при тёмной теме клиента */
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f3f3f3" },
@@ -55,6 +58,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name="color-scheme" content="only light" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+      </head>
       <body
         className={`${manrope.variable} ${bebasNeue.variable} ${abhaya.variable} ${oswald.variable} antialiased bg-[var(--bg)] text-[var(--foreground)]`}
       >
