@@ -44,8 +44,8 @@ export const metadata: Metadata = {
 
 /** Не использовать тёмную color-scheme ОС для canvas/формы/скроллбаров страницы. */
 export const viewport: Viewport = {
-  /** Светлый канвас; отдельно не используем `only light`/двусмысленность в проблемных WebView. */
-  colorScheme: "light",
+  /** Samsung Force Dark / WebView — сильнее, чем `light`. */
+  colorScheme: "only light",
   /** Не давать браузерам/In-App WebView (X/Telegram и т.д.) красить панели в чёрный при тёмной теме клиента */
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
@@ -62,17 +62,17 @@ export default function RootLayout({
     <html
       lang="en"
       className="bg-white text-[#181818]"
-      style={{ backgroundColor: "#ffffff", colorScheme: "light" }}
+      style={{ backgroundColor: "#ffffff", colorScheme: "only light" }}
       suppressHydrationWarning
     >
       <head>
-        <meta name="color-scheme" content="light" />
+        <meta name="color-scheme" content="only light" />
         {/* Подсказка WebKit/Blink для in-app WebView (X, Instagram и т.д.) */}
         <meta name="supported-color-schemes" content="light" />
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "!function(){var b='#ffffff',c='#181818',h=document.documentElement;h.style.setProperty('background',b,'important');h.style.setProperty('color-scheme','light','important');h.style.setProperty('color',c,'important');function t(){if(document.body){document.body.style.setProperty('background',b,'important');document.body.style.setProperty('color-scheme','light','important');document.body.style.setProperty('color',c,'important')}}t();document.addEventListener('DOMContentLoaded',t)}();",
+              "!function(){var b='#ffffff',c='#181818',h=document.documentElement;h.style.setProperty('background-color',b,'important');h.style.setProperty('color-scheme','only light','important');h.style.setProperty('color',c,'important');function t(){if(document.body){document.body.style.setProperty('background-color',b,'important');document.body.style.setProperty('color-scheme','only light','important');document.body.style.setProperty('color',c,'important')}}t();document.addEventListener('DOMContentLoaded',t)}();",
           }}
         />
         <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -82,15 +82,16 @@ export default function RootLayout({
       </head>
       <body
         className={`${manrope.variable} ${bebasNeue.variable} ${abhaya.variable} ${oswald.variable} antialiased`}
-        style={{ backgroundColor: "#ffffff", color: "#181818", colorScheme: "light" }}
+        style={{ backgroundColor: "#ffffff", color: "#181818", colorScheme: "only light" }}
       >
         <InAppWebViewPaintFix />
         <div
-          className="min-h-[100dvh] bg-[var(--bg)] text-[var(--foreground)]"
+          id="nico-app-shell"
+          className="nico-app-shell min-h-[100dvh] bg-[var(--bg)] text-[var(--foreground)]"
           style={{
             backgroundColor: "var(--bg)",
             color: "var(--foreground)",
-            colorScheme: "light",
+            colorScheme: "only light",
           }}
         >
           {children}

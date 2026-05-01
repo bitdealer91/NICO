@@ -1,10 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  /* Подсказка Blink/WebKit: только светлая схема (Samsung / Twitter WebView и др.). */
   supported-color-schemes: light;
-  color-scheme: light !important;
-  /* Канвас секций из Figma остаётся #f3f3f3 через переменную */
+  color-scheme: only light !important;
+  /* Канвас секций (Figma); html/body — белый документ против Force Dark подложки */
   --bg: #f3f3f3;
   --background: var(--bg);
   --foreground: #181818;
@@ -24,13 +23,19 @@
 }
 
 /*
-  Корневой лист принудительно светлый: WebView может подменять подложку при prefers-color-scheme: dark.
+  Samsung Internet «Force Dark» перекрашивает DOM, иногда минуя обычные подсказки.
+  Meta + color-scheme: only light блокируют авто-тёмную схему сильнее, чем content="light".
   Не использовать color-scheme: dark | light dark.
 */
+:root,
 html,
 body {
-  background: #ffffff !important;
-  color-scheme: light !important;
+  color-scheme: only light !important;
+}
+
+html,
+body {
+  background-color: #ffffff !important;
   color: #181818 !important;
 }
 
@@ -44,6 +49,17 @@ body {
   overflow-x: clip;
   font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
     "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+/* Обёртки и блоки первого порядка, куда часто попадает Force Dark помимо html/body */
+#nico-app-shell,
+.nico-app-page,
+#__next,
+main,
+footer,
+section {
+  background-color: #f3f3f3 !important;
+  color-scheme: only light !important;
 }
 
 h1,
@@ -88,17 +104,28 @@ h6 {
     --bg: #f3f3f3;
     --background: #f3f3f3;
     --foreground: #181818;
-    color-scheme: light !important;
+    color-scheme: only light !important;
   }
 
   html,
   body {
-    background: #ffffff !important;
+    background-color: #ffffff !important;
     color: #111111 !important;
+    color-scheme: only light !important;
+  }
+
+  #nico-app-shell,
+  .nico-app-page,
+  #__next,
+  main,
+  footer,
+  section {
+    background-color: #f3f3f3 !important;
+    color-scheme: only light !important;
   }
 }
 
-/* Samsung/Android WebView: уменьшает принудительное перекрашивание палитрой клиента */
+/* Частично блокируем принудительную палитру WebView/Android */
 * {
   forced-color-adjust: none;
 }

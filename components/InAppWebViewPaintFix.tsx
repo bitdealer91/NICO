@@ -2,10 +2,10 @@
 
 import { useLayoutEffect } from "react";
 
-const BG = "#ffffff";
+const BG_DOC = "#ffffff";
 
 /**
- * In-app WebView может перезаписать стили после гидрации. Дублируем фикс фона/meta-схемы с !important.
+ * In-app WebView / Force Dark может перезаписать стили после гидрации.
  */
 export function InAppWebViewPaintFix() {
   useLayoutEffect(() => {
@@ -17,13 +17,19 @@ export function InAppWebViewPaintFix() {
         typeof window.matchMedia === "function" && window.matchMedia("(prefers-color-scheme: dark)").matches;
       const fg = dark ? "#111111" : "#181818";
 
-      root.style.setProperty("background", BG, "important");
-      root.style.setProperty("color-scheme", "light", "important");
+      root.style.setProperty("background-color", BG_DOC, "important");
+      root.style.setProperty("color-scheme", "only light", "important");
       root.style.setProperty("color", fg, "important");
 
-      body.style.setProperty("background", BG, "important");
-      body.style.setProperty("color-scheme", "light", "important");
+      body.style.setProperty("background-color", BG_DOC, "important");
+      body.style.setProperty("color-scheme", "only light", "important");
       body.style.setProperty("color", fg, "important");
+
+      const shell = document.getElementById("nico-app-shell");
+      if (shell) {
+        shell.style.setProperty("background-color", "#f3f3f3", "important");
+        shell.style.setProperty("color-scheme", "only light", "important");
+      }
     };
 
     apply();

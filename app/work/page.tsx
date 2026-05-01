@@ -4,7 +4,7 @@ import { WorkSection } from "@/components/WorkSection";
 
 export default function WorkPage() {
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--foreground)]">
+    <div className="nico-app-page min-h-screen bg-[var(--bg)] text-[var(--foreground)]">
       <main>
         <ScrollToTopOnLoad />
         <Header />
