@@ -191,8 +191,11 @@ function CharacterCard({ character }: { character: Character }) {
 }
 
 const MARQUEE_OFFSET_TOP = 42;
+/** Короче полосы = меньше «пустого» места под кривой; иначе к margin суммируется и зазор кажется огромным. */
 const MARQUEE_BAND = 120;
 const MARQUEE_BLOCK = MARQUEE_OFFSET_TOP + MARQUEE_BAND;
+/** Отступ от низа блока с кривой до сетки карточек (десктоп). Не путать с 76px в Figma — там часто от базовой линии текста. */
+const MARQUEE_TO_CARDS_GAP_PX = 20;
 
 export function Sections() {
   const reduceMotion = !!useReducedMotion();
@@ -271,13 +274,14 @@ export function Sections() {
           style={{ height: marqueeHeight, opacity: marqueeOpacity, y: marqueeY }}
         >
           <div style={{ paddingTop: MARQUEE_OFFSET_TOP }}>
-            <CurvedLoopText />
+            <CurvedLoopText bandPx={MARQUEE_BAND} />
           </div>
         </motion.div>
 
         <div
           ref={cardsRef}
-          className="relative z-10 mx-auto mt-[60px] hidden w-full max-w-[1520px] px-10 lg:block"
+          className="relative z-10 mx-auto hidden w-full max-w-[1520px] px-10 lg:block"
+          style={{ marginTop: MARQUEE_TO_CARDS_GAP_PX }}
         >
           {/*
             Контент 1440 (= 4×360): при max-w-[1440px]+px-10 ячейка ~340 и крайний столбец «плывёт». 1520 = 1440+80 паддингов.
