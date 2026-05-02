@@ -82,13 +82,13 @@ export function HeroScroller() {
       <div
         className={
           isDesktop
-            ? "sticky top-0 h-screen overflow-hidden bg-[#F3F3F3]"
+            ? "sticky top-0 flex h-screen min-h-0 flex-col overflow-hidden bg-[#F3F3F3]"
             : "flex min-h-[100svh] min-w-0 flex-col bg-[#F3F3F3]"
         }
       >
         <Header />
 
-        <div className="relative z-10 flex min-h-0 flex-1 flex-col lg:h-full lg:flex-none">
+        <div className="relative z-10 flex min-h-0 min-w-0 w-full flex-1 flex-col lg:min-h-0">
           <CharacterStage
             items={characters}
             activeIndex={activeIndex}

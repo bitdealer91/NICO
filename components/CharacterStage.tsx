@@ -137,7 +137,7 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
   const m = (px: number) => `calc(${px} * (100vw / 390))`;
 
   return (
-    <div className="relative mx-auto flex h-full min-h-0 w-full max-w-[1440px] flex-1 flex-col lg:block lg:flex-none">
+    <div className="relative mx-auto flex h-full min-h-0 min-w-0 w-full max-w-[1440px] flex-1 flex-col lg:block lg:flex-none">
       {/* Desktop (pixel-ish to Figma) */}
       <div className="hidden h-full lg:block">
         <h1
@@ -249,7 +249,8 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
           )}
         </div>
 
-        <div className="absolute left-1/2 bottom-[0px] z-50 w-[1187px] max-w-[calc(100vw-80px)] -translate-x-1/2">
+        {/* max-width от контейнера композиции (1440), не от 100vw — иначе на ультрашироких дуга «смотрит» на другую ширину, чем абсолютная сетка */}
+        <div className="absolute bottom-[0px] left-1/2 z-50 w-full max-w-[min(1187px,calc(100%-40px))] -translate-x-1/2">
           <ArcNav items={items} activeIndex={activeIndex} onSelectIndex={onSelectIndex} />
         </div>
       </div>
