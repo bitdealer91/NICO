@@ -184,6 +184,25 @@ function WorkRow({ project, isActive, isOpen, isWide, onHover, onToggleOpen, anc
         ? { left: "calc(75% - 15px)", top: -7, width: 338, height: 236 }
         : { left: "calc(75% + 3px)", top: -5, width: 338, height: 236 };
 
+  const expandedTextTopClass =
+    project.id === "lootbox" ? "absolute left-[40px] top-[-39px] h-[370px] w-[671px]" : "absolute left-[40px] top-[-23px] h-[370px] w-[671px]";
+
+  const expandedVideoStyle = (() => {
+    if (project.id === "lootbox") {
+      return isWide
+        ? { left: "calc(58.33% + 109px)", top: -36, width: 651, height: 317 }
+        : { left: "calc(50% + 29px)", top: -36, width: 651, height: 317 };
+    }
+    if (project.id === "web3") {
+      return isWide
+        ? { left: "calc(58.33% + 108px)", top: -36, width: 652, height: 318 }
+        : { left: "calc(50% + 28px)", top: -36, width: 652, height: 318 };
+    }
+    return isWide
+      ? { left: "calc(79.17% + 43px)", top: -40, width: 634, height: 405, transform: "translateX(-50%)" }
+      : { left: "calc(79.17% - 57px)", top: -40, width: 634, height: 405, transform: "translateX(-50%)" };
+  })();
+
   return (
     <motion.article
       id={anchorId}
@@ -231,11 +250,13 @@ function WorkRow({ project, isActive, isOpen, isWide, onHover, onToggleOpen, anc
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className={["relative mt-0 w-full", isWide ? "h-[593px]" : "h-[385px]"].join(" ")}
+            className="relative mt-0 h-[385px] w-full"
           >
-            <div className={isWide ? "absolute left-[40px] top-[150px] h-px w-[1840px] bg-[#181818]/30" : "absolute left-0 right-0 top-[-46px] h-px bg-[#181818]/15"} />
+            <div
+              className={isWide ? "absolute left-[40px] top-[-58px] h-px w-[1840px] bg-[#181818]/30" : "absolute left-0 top-[-58px] h-px w-full bg-[#181818]/30"}
+            />
 
-            <div className={isWide ? "absolute left-[40px] top-[185px] h-[370px] w-[671px]" : "absolute left-[40px] top-[-12px] h-[397px] w-[671px]"}>
+            <div className={expandedTextTopClass}>
               <p className="font-sans text-[25px] leading-[33.07px] text-[#181818]">
                 {project.description.map((paragraph, index) => (
                   <span key={index} className={index > 0 ? "mt-4 block" : "block"}>
@@ -245,9 +266,9 @@ function WorkRow({ project, isActive, isOpen, isWide, onHover, onToggleOpen, anc
               </p>
             </div>
 
-            <div className={isWide ? "absolute left-[1289px] top-[168px] h-[405px] w-[634px] overflow-hidden bg-[#E8E8E8]" : "absolute left-[766px] top-[-12px] h-[405px] w-[634px] overflow-hidden bg-[#E8E8E8]"}>
+            <div className="absolute overflow-hidden bg-[#E8E8E8]" style={expandedVideoStyle}>
               <video
-                className="h-full w-full object-contain"
+                className="h-full w-full object-cover"
                 src={project.videoSrc}
                 autoPlay
                 muted
@@ -320,8 +341,8 @@ export function WorkSection() {
         <div id="work-nav-anchor-desktop" className="h-0 w-full scroll-mt-0" />
         <div
           ref={rowsRef}
-          className={isWide ? "flex w-[1440px] flex-col gap-6" : "flex w-full flex-col gap-6"}
-          style={isWide ? { transform: "translateX(-196px)" } : undefined}
+          className={isWide ? "flex w-[1440px] flex-col gap-6" : "flex w-[1440px] flex-col gap-6"}
+          style={isWide ? { transform: "translateX(-196px)" } : { transform: "translateX(-45px)" }}
         >
           {PROJECTS.map((project) => (
             <div key={project.id} className={isWide ? "w-[1920px]" : "w-full"}>

@@ -201,8 +201,13 @@ const MARQUEE_TO_CARDS_GAP_PX = 20;
 export function Sections() {
   const isWide = useWideDesktop();
   const reduceMotion = !!useReducedMotion();
+  const aboutRef = useRef<HTMLElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
   const mobileCardsRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: aboutScrollProgress } = useScroll({
+    target: aboutRef,
+    offset: ["start start", "end start"],
+  });
   const { scrollYProgress } = useScroll({
     target: cardsRef,
     offset: ["start 0.72", "start 0.2"],
@@ -214,13 +219,16 @@ export function Sections() {
   const marqueeOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
   const marqueeY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : -32]);
   const marqueeHeight = useTransform(scrollYProgress, [0, 1], [MARQUEE_BLOCK, 0]);
+  const wideMarqueeOpacity = useTransform(aboutScrollProgress, [0, 0.22, 0.38], [1, 1, 0]);
+  const wideMarqueeY = useTransform(aboutScrollProgress, [0, 0.38], [0, reduceMotion ? 0 : -32]);
+  const wideMarqueeHeight = useTransform(aboutScrollProgress, [0, 0.22, 0.38], [MARQUEE_BLOCK, MARQUEE_BLOCK, 0]);
   const mobileMarqueeOpacity = useTransform(mobileCardsProgress, [0, 0.85], [1, 0]);
   const mobileMarqueeY = useTransform(mobileCardsProgress, [0, 0.85], [0, reduceMotion ? 0 : -18]);
   const mobileMarqueeHeight = useTransform(mobileCardsProgress, [0, 0.85], [50, 0]);
 
   return (
     <div className="relative z-10 overflow-hidden bg-[#F3F3F3] text-[#181818]">
-      <section id="about" className="relative w-full flex-col pb-0 pt-10 lg:min-h-0 lg:snap-start lg:pb-0 lg:pt-14">
+      <section ref={aboutRef} id="about" className="relative w-full flex-col pb-0 pt-10 lg:min-h-0 lg:snap-start lg:pb-0 lg:pt-14">
         {isWide ? (
           <div className="relative mx-auto hidden lg:block" style={{ height: 1150, width: 1920 }}>
             {/* thinker decoration */}
@@ -240,8 +248,8 @@ export function Sections() {
 
             {/* Curved watermark */}
             <motion.div
-              className="absolute left-0 top-[502px] z-10 h-auto w-[1920px] overflow-hidden will-change-transform"
-              style={{ height: marqueeHeight, opacity: marqueeOpacity, y: marqueeY }}
+              className="absolute left-0 top-[502px] z-10 h-auto w-[1920px] overflow-hidden"
+              style={{ height: wideMarqueeHeight, opacity: wideMarqueeOpacity, y: wideMarqueeY }}
             >
               <div style={{ paddingTop: MARQUEE_OFFSET_TOP }}>
                 <CurvedLoopText bandPx={MARQUEE_BAND} alpha={0.1} />

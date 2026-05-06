@@ -10,12 +10,12 @@ export function Footer() {
       className="relative mx-auto w-full bg-[#F3F3F3] px-[10px] pb-8 text-[#181818] lg:h-[268px] lg:snap-start lg:pb-0"
       style={{ maxWidth: isWide ? 1360 : 1440 }}
     >
-      <div className="relative hidden h-full w-full lg:block">
-        <div className="absolute left-0 top-[7px] h-[174px] w-[268px]">
+      <div className={["relative hidden h-full w-full lg:block", isWide ? "overflow-visible" : ""].join(" ")}>
+        <div className="absolute h-[174px] w-[268px]" style={{ left: isWide ? -240 : 0, top: 7 }}>
           <Image src="/figma/logo.png" alt="NICO studio" fill className="object-contain" priority />
         </div>
 
-        <div className="-translate-y-1/2 absolute left-[553px] top-[30px] w-[335px]">
+        <div className="-translate-y-1/2 absolute top-[33.5px] w-[335px]" style={{ left: isWide ? "calc(50% - 168px)" : 553 }}>
           <p
             className="select-none font-sans text-[25px] font-normal leading-[33.1px] text-[#181818]"
             style={{ fontFamily: "var(--font-sans)" }}
@@ -26,7 +26,7 @@ export function Footer() {
           </p>
         </div>
 
-        <div className="-translate-y-1/2 absolute left-[1097px] top-[30px] text-left">
+        <div className="-translate-y-1/2 absolute text-left" style={{ left: isWide ? 1337 : 1097, top: isWide ? 17 : 30 }}>
           <a
             href="mailto:bitdealer91@gmail.com"
             className="font-sans text-[25px] font-bold leading-[33.1px] text-[#181818] underline"
@@ -34,7 +34,7 @@ export function Footer() {
           >
             bitdealer91@gmail.com
           </a>
-          <div className="mt-2">
+          <div style={{ marginTop: isWide ? 0 : 8 }}>
             <a
               href="https://x.com/nico_studio_"
               target="_blank"
@@ -47,7 +47,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="-translate-y-1/2 absolute left-0 top-[234px]">
+        <div className="-translate-y-1/2 absolute" style={{ left: isWide ? -240 : 0, top: 234 }}>
           <p
             className="font-sans text-[15px] font-normal leading-[20px] text-[#181818]"
             style={{ fontFamily: "var(--font-sans)" }}
