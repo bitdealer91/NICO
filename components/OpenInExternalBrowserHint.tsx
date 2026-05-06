@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const STORAGE_KEY = "nico-external-browser-hint-dismissed";
 
@@ -36,20 +36,20 @@ function detectsInAppWebView(ua: string): boolean {
  * Короткая подсказка: открыть сайт во внешнем браузере во встроенных WebView (X, Instagram…).
  */
 export function OpenInExternalBrowserHint() {
-  const [show, setShow] = useState(false);
-  const [href, setHref] = useState("");
+  const [{ show, href }, setHintState] = useState(() => {
+    if (typeof window === "undefined") return { show: false, href: "" };
 
-  useEffect(() => {
     try {
-      if (sessionStorage.getItem(STORAGE_KEY)) return;
+      if (sessionStorage.getItem(STORAGE_KEY)) return { show: false, href: "" };
     } catch {
       /* режим приватности / блок storage */
     }
+
     const ua = typeof navigator !== "undefined" ? (navigator.userAgent ?? "") : "";
-    if (!detectsInAppWebView(ua)) return;
-    setHref(window.location.href);
-    setShow(true);
-  }, []);
+    if (!detectsInAppWebView(ua)) return { show: false, href: "" };
+
+    return { show: true, href: window.location.href };
+  });
 
   const dismiss = () => {
     try {
@@ -57,7 +57,7 @@ export function OpenInExternalBrowserHint() {
     } catch {
       /* ignore */
     }
-    setShow(false);
+    setHintState((prev) => ({ ...prev, show: false }));
   };
 
   async function copyLink() {

@@ -15,6 +15,7 @@ type CharacterStageProps = {
   activeIndex: number;
   reduceMotion?: boolean;
   onSelectIndex?: (index: number) => void;
+  desktopLayout?: "standard" | "wide";
 };
 
 function CharacterVisual({
@@ -128,84 +129,133 @@ function SideCharacterPreview({ item }: { item: Character }) {
   );
 }
 
-export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex }: CharacterStageProps) {
+export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex, desktopLayout = "standard" }: CharacterStageProps) {
   const active = items[activeIndex];
   const hasPrev = activeIndex > 0;
   const hasNext = activeIndex < items.length - 1;
   const mobileVideoFor = (item: Character | null) => item?.mobileVideoSrc ?? item?.videoSrc;
   /** Figma phone (390) → scale: multiply px by (100vw/390). */
   const m = (px: number) => `calc(${px} * (100vw / 390))`;
+  const isWide = desktopLayout === "wide";
 
   return (
-    <div className="relative mx-auto flex h-full min-h-0 min-w-0 w-full max-w-[1440px] flex-1 flex-col lg:block lg:flex-none">
+    <div
+      className="relative mx-auto flex h-full min-h-0 min-w-0 w-full flex-1 flex-col lg:block lg:flex-none"
+      style={{ maxWidth: isWide ? 1920 : 1440 }}
+    >
       {/* Desktop (pixel-ish to Figma) */}
       <div className="hidden h-full lg:block">
         <h1
-          className="absolute left-[40px] top-[321px] z-30 select-none text-[#181818]"
+          className={[
+            "absolute z-30 select-none text-[#181818]",
+            isWide ? "left-[40px] top-[371px]" : "left-[40px] top-[321px]",
+          ].join(" ")}
           style={{ fontFamily: "var(--font-nav)" }}
         >
-          {/* Figma 4:279 / Name Crew: Oswald 120 / 700 / LH 100% / LS -2.76px */}
+          {/* Figma / Name Crew: Oswald 120 / 700 / LH 100% / LS -2.76px */}
           <div className="text-[120px] font-bold leading-[100%] tracking-[-2.76px]">THE</div>
           <div className="text-[120px] font-bold leading-[100%] tracking-[-2.76px]">LAUNCH</div>
-          <div
-            className="text-[120px] font-bold leading-[100%] tracking-[-2.76px]"
-            style={{ color: active.roleColor ?? "#EBB55C" }}
-          >
+          <div className="text-[120px] font-bold leading-[100%] tracking-[-2.76px]" style={{ color: active.roleColor ?? "#EBB55C" }}>
             CREW
           </div>
         </h1>
 
-        {/* Figma 4:279 — `424:1013`: (306, 82) 840×840 on 1440×900; scale x/w with container, fixed top */}
-        <div className="absolute left-[21.25%] top-[82px] z-10 w-[58.3333333%] max-w-[840px]">
-          <div className="relative aspect-square w-full">
-            {reduceMotion ? (
-              <CharacterVisual
-                fillSlot
-                videoSrc={active.videoSrc}
-                src={active.imageSrc}
-                id={active.id}
-                reduceMotion
-                scale={active.stageScale}
-                translateY={active.stageTranslateY}
+        {/* Media slot */}
+        {isWide ? (
+          // Wide desktop: Figma 1920×1080, hero media at (540, 242) size 840×840.
+          <div className="absolute left-[540px] top-[242px] z-10 h-[840px] w-[840px]">
+            <div className="relative h-full w-full">
+              {reduceMotion ? (
+                <CharacterVisual
+                  fillSlot
+                  videoSrc={active.videoSrc}
+                  src={active.imageSrc}
+                  id={active.id}
+                  reduceMotion
+                  scale={active.stageScale}
+                  translateY={active.stageTranslateY}
+                />
+              ) : (
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={active.id}
+                    className="h-full w-full"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <CharacterVisual
+                      fillSlot
+                      videoSrc={active.videoSrc}
+                      src={active.imageSrc}
+                      id={active.id}
+                      scale={active.stageScale}
+                      translateY={active.stageTranslateY}
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              )}
+            </div>
+          </div>
+        ) : (
+          // Standard desktop: 1440-holst scaled by container width.
+          <div className="absolute left-[21.25%] top-[82px] z-10 w-[58.3333333%] max-w-[840px]">
+            <div className="relative aspect-square w-full">
+              {reduceMotion ? (
+                <CharacterVisual
+                  fillSlot
+                  videoSrc={active.videoSrc}
+                  src={active.imageSrc}
+                  id={active.id}
+                  reduceMotion
+                  scale={active.stageScale}
+                  translateY={active.stageTranslateY}
+                />
+              ) : (
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={active.id}
+                    className="h-full w-full"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <CharacterVisual
+                      fillSlot
+                      videoSrc={active.videoSrc}
+                      src={active.imageSrc}
+                      id={active.id}
+                      scale={active.stageScale}
+                      translateY={active.stageTranslateY}
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              )}
+            </div>
+            <div className="pointer-events-none relative z-[1] -mt-12 flex w-full justify-center px-2 lg:-mt-[60px]" aria-hidden>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={HERO_ELLIPSE_SHADOW_SRC}
+                alt=""
+                width={662}
+                height={74}
+                decoding="async"
+                className="pointer-events-none mx-auto block h-auto w-[min(138%,940px)] max-w-none -translate-y-3 select-none opacity-[0.48] [filter:saturate(1)_brightness(0.93)_contrast(1.04)] will-change-transform lg:-translate-y-3.5"
+                style={{ mixBlendMode: "darken" }}
               />
-            ) : (
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.div
-                  key={active.id}
-                  className="h-full w-full"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <CharacterVisual
-                    fillSlot
-                    videoSrc={active.videoSrc}
-                    src={active.imageSrc}
-                    id={active.id}
-                    scale={active.stageScale}
-                    translateY={active.stageTranslateY}
-                  />
-                </motion.div>
-              </AnimatePresence>
-            )}
+            </div>
           </div>
-          <div className="pointer-events-none relative z-[1] -mt-12 flex w-full justify-center px-2 lg:-mt-[60px]" aria-hidden>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={HERO_ELLIPSE_SHADOW_SRC}
-              alt=""
-              width={662}
-              height={74}
-              decoding="async"
-              className="pointer-events-none mx-auto block h-auto w-[min(138%,940px)] max-w-none -translate-y-3 select-none opacity-[0.48] [filter:saturate(1)_brightness(0.93)_contrast(1.04)] will-change-transform lg:-translate-y-3.5"
-              style={{ mixBlendMode: "darken" }}
-            />
-          </div>
-        </div>
+        )}
 
-        {/* Figma `49:1148` Crew info: (1144, 325) w=261 on 1440 canvas */}
-        <div className="absolute left-[79.4444444%] top-[325px] z-30 w-[18.125%] max-w-[261px]">
+        {/* Crew info */}
+        <div
+          className={[
+            "absolute z-30 w-[261px]",
+            isWide ? "left-[1624px] top-[375px]" : "left-[79.4444444%] top-[325px] w-[18.125%] max-w-[261px]",
+          ].join(" ")}
+        >
           {reduceMotion ? (
             <>
               <div
@@ -249,8 +299,13 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
           )}
         </div>
 
-        {/* max-width от контейнера композиции (1440), не от 100vw — иначе на ультрашироких дуга «смотрит» на другую ширину, чем абсолютная сетка */}
-        <div className="absolute bottom-[0px] left-1/2 z-50 w-full max-w-[min(1187px,calc(100%-40px))] -translate-x-1/2">
+        {/* ArcNav — pinned to screen bottom; width uses composition container, not 100vw. */}
+        <div
+          className={[
+            "absolute bottom-0 left-1/2 z-50 -translate-x-1/2",
+            isWide ? "w-[968px] max-w-none" : "w-full max-w-[min(1187px,calc(100%-40px))]",
+          ].join(" ")}
+        >
           <ArcNav items={items} activeIndex={activeIndex} onSelectIndex={onSelectIndex} />
         </div>
       </div>

@@ -19,6 +19,7 @@ function hexToRgb(hex: string) {
 
 export function HeroScroller() {
   const [isDesktop, setIsDesktop] = useState(false);
+  const [isWide, setIsWide] = useState(false);
   const [mobileIndex, setMobileIndex] = useState(0);
   const sectionRef = useRef<HTMLElement | null>(null);
   const { activeIndex: scrollIndex, reduceMotion } = useScrollSteps({
@@ -29,11 +30,19 @@ export function HeroScroller() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const apply = () => setIsDesktop(mq.matches);
+    const desktopMq = window.matchMedia("(min-width: 1024px)");
+    const wideMq = window.matchMedia("(min-width: 1920px)");
+    const apply = () => {
+      setIsDesktop(desktopMq.matches);
+      setIsWide(wideMq.matches);
+    };
     apply();
-    mq.addEventListener("change", apply);
-    return () => mq.removeEventListener("change", apply);
+    desktopMq.addEventListener("change", apply);
+    wideMq.addEventListener("change", apply);
+    return () => {
+      desktopMq.removeEventListener("change", apply);
+      wideMq.removeEventListener("change", apply);
+    };
   }, []);
 
   function scrollToIndex(index: number) {
@@ -68,6 +77,8 @@ export function HeroScroller() {
     }
   }, [accent, accentRgb]);
 
+  const desktopLayout = isWide ? "wide" : "standard";
+
   return (
     <section
       ref={sectionRef}
@@ -86,7 +97,7 @@ export function HeroScroller() {
             : "flex min-h-[100svh] min-w-0 flex-col bg-[#F3F3F3]"
         }
       >
-        <Header />
+        <Header maxWidthPx={isWide ? 1920 : 1440} />
 
         <div className="relative z-10 flex min-h-0 min-w-0 w-full flex-1 flex-col lg:min-h-0">
           <CharacterStage
@@ -94,6 +105,7 @@ export function HeroScroller() {
             activeIndex={activeIndex}
             reduceMotion={reduceMotion}
             onSelectIndex={scrollToIndex}
+            desktopLayout={desktopLayout}
           />
         </div>
       </div>

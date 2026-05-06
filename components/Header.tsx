@@ -20,7 +20,7 @@ function openWorkFirstCase() {
   window.dispatchEvent(new CustomEvent("nico:open-work-first-case"));
 }
 
-export function Header() {
+export function Header({ maxWidthPx = 1440 }: { maxWidthPx?: number }) {
   const connectBtnRef = useRef<HTMLButtonElement | null>(null);
   const [connectOpen, setConnectOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionId | null>(null);
@@ -148,8 +148,8 @@ export function Header() {
     <>
       <header className="absolute inset-x-0 top-0 z-40">
         <div
-          className="relative mx-auto w-full max-w-[1440px] lg:h-[110px]"
-          style={{ minHeight: "calc(var(--mobile-menu-size) + var(--mobile-gutter) + env(safe-area-inset-top) + 8px)" }}
+          className="relative mx-auto w-full lg:h-[110px]"
+          style={{ maxWidth: maxWidthPx, minHeight: "calc(var(--mobile-menu-size) + var(--mobile-gutter) + env(safe-area-inset-top) + 8px)" }}
         >
           {/* Desktop (Figma layout) */}
           <div className="hidden lg:block">
