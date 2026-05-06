@@ -327,23 +327,21 @@ export function WorkSection() {
           <WorkCurvedLoopText />
         </motion.div>
         <div id="work-nav-anchor-desktop" className="h-0 w-full scroll-mt-0" />
-        <div ref={rowsRef} className="flex w-full flex-col gap-6">
+        <div
+          ref={rowsRef}
+          className={isWide ? "flex w-[1440px] flex-col gap-6" : "flex w-full flex-col gap-6"}
+          style={isWide ? { transform: "translateX(-196px)" } : undefined}
+        >
           {PROJECTS.map((project) => (
-            <div
+            <WorkRow
               key={project.id}
-              className={isWide ? "relative left-1/2 w-[1920px] -translate-x-1/2" : ""}
-            >
-              <WorkRow
-                anchorId={project.id === "airdrop" ? "work-case-first-desktop" : undefined}
-                project={project}
-                isActive={project.id === activeId}
-                isOpen={project.id === openProjectId}
-                onHover={() => setActiveId(project.id)}
-                onToggleOpen={() =>
-                  setOpenProjectId((current) => (current === project.id ? null : project.id))
-                }
-              />
-            </div>
+              anchorId={project.id === "airdrop" ? "work-case-first-desktop" : undefined}
+              project={project}
+              isActive={project.id === activeId}
+              isOpen={project.id === openProjectId}
+              onHover={() => setActiveId(project.id)}
+              onToggleOpen={() => setOpenProjectId((current) => (current === project.id ? null : project.id))}
+            />
           ))}
         </div>
       </div>
