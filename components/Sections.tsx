@@ -222,7 +222,7 @@ export function Sections() {
     <div className="relative z-10 overflow-hidden bg-[#F3F3F3] text-[#181818]">
       <section id="about" className="relative w-full flex-col pb-0 pt-10 lg:min-h-0 lg:snap-start lg:pb-0 lg:pt-14">
         {isWide ? (
-          <div className="relative hidden lg:block mx-auto" style={{ height: 598, width: 1920 }}>
+          <div className="relative mx-auto hidden lg:block" style={{ height: 1150, width: 1920 }}>
             {/* thinker decoration */}
             <div className="pointer-events-none absolute z-0 h-[840px] w-[840px] rotate-90" style={{ left: -376, top: -129 }}>
               <div className="relative isolate h-full w-full">
@@ -240,7 +240,7 @@ export function Sections() {
 
             {/* Curved watermark */}
             <motion.div
-              className="absolute left-0 top-[-18px] z-10 h-auto w-[1920px] overflow-hidden will-change-transform"
+              className="absolute left-0 top-[502px] z-10 h-auto w-[1920px] overflow-hidden will-change-transform"
               style={{ height: marqueeHeight, opacity: marqueeOpacity, y: marqueeY }}
             >
               <div style={{ paddingTop: MARQUEE_OFFSET_TOP }}>
@@ -249,7 +249,7 @@ export function Sections() {
             </motion.div>
 
             {/* Cards row */}
-            <div ref={cardsRef} className="absolute left-0 top-[98px] h-[500px] w-[1920px]">
+            <div ref={cardsRef} className="absolute left-0 top-[618px] h-[500px] w-[1920px]">
               {CHARACTERS.map((character) => {
                 const leftX: Record<(typeof character)["id"], number> = {
                   thinker: 60,

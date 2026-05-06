@@ -120,7 +120,7 @@ function WorkCurvedLoopText({ bandPx = 120 }: { bandPx?: number }) {
 
 function WorkMedia({ project, isActive, grayscale }: WorkMediaProps) {
   return (
-    <div className="relative h-[236px] w-[338px] overflow-hidden">
+    <div className="relative h-full w-full overflow-hidden">
       <motion.div
         initial={false}
         animate={{
@@ -153,25 +153,36 @@ type WorkRowProps = {
   project: WorkProject;
   isActive: boolean;
   isOpen: boolean;
+  isWide: boolean;
   onHover: () => void;
   onToggleOpen: () => void;
   anchorId?: string;
 };
 
-function WorkRow({ project, isActive, isOpen, onHover, onToggleOpen, anchorId }: WorkRowProps) {
-  const underlineLeftClass =
-    project.id === "airdrop"
-      ? "left-[calc(16.67%+73px)]"
+function WorkRow({ project, isActive, isOpen, isWide, onHover, onToggleOpen, anchorId }: WorkRowProps) {
+  const underlineStyle = isWide
+    ? project.id === "airdrop"
+      ? { left: "calc(8.33% + 153px)" }
       : project.id === "lootbox"
-        ? "left-[calc(25%+25px)]"
-        : "left-[calc(16.67%+94px)]";
+        ? { left: "calc(16.67% + 65px)" }
+        : { left: "calc(16.67% + 14px)" }
+    : project.id === "airdrop"
+      ? { left: "calc(16.67% + 73px)" }
+      : project.id === "lootbox"
+        ? { left: "calc(25% + 25px)" }
+        : { left: "calc(16.67% + 94px)" };
 
-  const mediaPositionClass =
-    project.id === "airdrop"
-      ? "left-[calc(75%-18px)] top-[-14px]"
+  const mediaStyle = isWide
+    ? project.id === "airdrop"
+      ? { left: "calc(75% + 104px)", top: -14, width: 338, height: 236 }
       : project.id === "lootbox"
-        ? "left-[calc(75%-15px)] top-[-7px]"
-        : "left-[calc(75%+3px)] top-[-5px]";
+        ? { left: "calc(58.33% + 45px)", top: -7, width: 335, height: 222 }
+        : { left: "calc(41.67% + 13px)", top: -5, width: 338, height: 218 }
+    : project.id === "airdrop"
+      ? { left: "calc(75% - 18px)", top: -14, width: 338, height: 236 }
+      : project.id === "lootbox"
+        ? { left: "calc(75% - 15px)", top: -7, width: 338, height: 236 }
+        : { left: "calc(75% + 3px)", top: -5, width: 338, height: 236 };
 
   return (
     <motion.article
@@ -203,32 +214,12 @@ function WorkRow({ project, isActive, isOpen, onHover, onToggleOpen, anchorId }:
             {project.title}
           </p>
         </div>
+        {!isOpen ? <div className="absolute top-[150px] h-px w-[61px] bg-[#181818]" style={underlineStyle} /> : null}
         {!isOpen ? (
-          <div className={`absolute top-[150px] h-px w-[61px] ${underlineLeftClass}`}>
-            <div className="absolute inset-0 bg-[#181818]" />
-          </div>
-        ) : null}
-        {!isOpen ? (
-          <div className={`absolute h-[236px] w-[338px] ${mediaPositionClass}`}>
+          <div className="absolute overflow-hidden" style={mediaStyle}>
             <WorkMedia project={project} isActive={isActive} grayscale />
           </div>
         ) : null}
-
-        {/* Hover affordance: subtle "View details" hint on desktop */}
-        <motion.div
-          className="pointer-events-none absolute right-[120px] top-1/2 hidden -translate-y-1/2 items-center gap-2 lg:flex"
-          initial={false}
-          animate={{
-            opacity: isActive || isOpen ? 1 : 0,
-            x: isActive || isOpen ? 0 : 6,
-          }}
-          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <span className="font-sans text-[16px] uppercase tracking-[0.18em] text-[#181818]/55">
-            View details
-          </span>
-          <span className="text-[18px] text-[#181818]/70">↗</span>
-        </motion.div>
       </motion.div>
 
       <AnimatePresence initial={false}>
@@ -240,13 +231,11 @@ function WorkRow({ project, isActive, isOpen, onHover, onToggleOpen, anchorId }:
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="relative mt-0 h-[385px] w-full"
+            className={["relative mt-0 w-full", isWide ? "h-[593px]" : "h-[385px]"].join(" ")}
           >
-            {/* Full-width stripe: visually ~12px ниже прежнего прочерка */}
-            <div className="absolute left-0 right-0 top-[-46px] h-px bg-[#181818]/15" />
+            <div className={isWide ? "absolute left-[40px] top-[150px] h-px w-[1840px] bg-[#181818]/30" : "absolute left-0 right-0 top-[-46px] h-px bg-[#181818]/15"} />
 
-            {/* Text block: 671x397, 34px ниже полосы */}
-            <div className="absolute left-[40px] top-[-12px] h-[397px] w-[671px]">
+            <div className={isWide ? "absolute left-[40px] top-[185px] h-[370px] w-[671px]" : "absolute left-[40px] top-[-12px] h-[397px] w-[671px]"}>
               <p className="font-sans text-[25px] leading-[33.07px] text-[#181818]">
                 {project.description.map((paragraph, index) => (
                   <span key={index} className={index > 0 ? "mt-4 block" : "block"}>
@@ -256,8 +245,7 @@ function WorkRow({ project, isActive, isOpen, onHover, onToggleOpen, anchorId }:
               </p>
             </div>
 
-            {/* Video block: 634x405, aligned vertically with the text block (same top) */}
-            <div className="absolute left-[766px] top-[-12px] h-[405px] w-[634px] overflow-hidden bg-[#E8E8E8]">
+            <div className={isWide ? "absolute left-[1289px] top-[168px] h-[405px] w-[634px] overflow-hidden bg-[#E8E8E8]" : "absolute left-[766px] top-[-12px] h-[405px] w-[634px] overflow-hidden bg-[#E8E8E8]"}>
               <video
                 className="h-full w-full object-contain"
                 src={project.videoSrc}
@@ -329,19 +317,21 @@ export function WorkSection() {
         <div id="work-nav-anchor-desktop" className="h-0 w-full scroll-mt-0" />
         <div
           ref={rowsRef}
-          className={isWide ? "flex w-[1440px] flex-col gap-6" : "flex w-full flex-col gap-6"}
+          className={isWide ? "flex w-[1440px] flex-col gap-6 overflow-hidden" : "flex w-full flex-col gap-6"}
           style={isWide ? { transform: "translateX(-196px)" } : undefined}
         >
           {PROJECTS.map((project) => (
-            <WorkRow
-              key={project.id}
-              anchorId={project.id === "airdrop" ? "work-case-first-desktop" : undefined}
-              project={project}
-              isActive={project.id === activeId}
-              isOpen={project.id === openProjectId}
-              onHover={() => setActiveId(project.id)}
-              onToggleOpen={() => setOpenProjectId((current) => (current === project.id ? null : project.id))}
-            />
+            <div key={project.id} className={isWide ? "w-[1920px]" : "w-full"}>
+              <WorkRow
+                anchorId={project.id === "airdrop" ? "work-case-first-desktop" : undefined}
+                project={project}
+                isActive={project.id === activeId}
+                isOpen={project.id === openProjectId}
+                isWide={isWide}
+                onHover={() => setActiveId(project.id)}
+                onToggleOpen={() => setOpenProjectId((current) => (current === project.id ? null : project.id))}
+              />
+            </div>
           ))}
         </div>
       </div>
