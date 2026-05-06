@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { useWideDesktop } from "@/lib/useWideDesktop";
 
 type WorkProject = {
   id: "airdrop" | "lootbox" | "web3";
@@ -274,6 +275,7 @@ function WorkRow({ project, isActive, isOpen, onHover, onToggleOpen, anchorId }:
 }
 
 export function WorkSection() {
+  const isWide = useWideDesktop();
   const [activeId, setActiveId] = useState<WorkProject["id"]>("airdrop");
   const [openProjectId, setOpenProjectId] = useState<WorkProject["id"] | null>(null);
   const reduceMotion = !!useReducedMotion();
@@ -313,7 +315,8 @@ export function WorkSection() {
   return (
     <section
       id="work"
-      className="relative mx-auto mt-10 flex max-w-[1440px] flex-col bg-[#F3F3F3] px-[10px] pb-0 pt-0 text-[#181818] lg:mt-10 lg:pb-0 lg:pl-[45px] lg:pr-[45px]"
+      className="relative mx-auto mt-10 flex flex-col bg-[#F3F3F3] px-[10px] pb-0 pt-0 text-[#181818] lg:mt-10 lg:pb-0"
+      style={{ maxWidth: isWide ? 1530 : 1440, paddingLeft: isWide ? 0 : 45, paddingRight: isWide ? 0 : 45 }}
     >
       {/* Figma: WORK watermark + rows with 24px gap */}
       <div className="hidden w-full flex-col gap-6 lg:flex">
@@ -326,17 +329,21 @@ export function WorkSection() {
         <div id="work-nav-anchor-desktop" className="h-0 w-full scroll-mt-0" />
         <div ref={rowsRef} className="flex w-full flex-col gap-6">
           {PROJECTS.map((project) => (
-            <WorkRow
+            <div
               key={project.id}
-              anchorId={project.id === "airdrop" ? "work-case-first-desktop" : undefined}
-              project={project}
-              isActive={project.id === activeId}
-              isOpen={project.id === openProjectId}
-              onHover={() => setActiveId(project.id)}
-              onToggleOpen={() =>
-                setOpenProjectId((current) => (current === project.id ? null : project.id))
-              }
-            />
+              className={isWide ? "relative left-1/2 w-[1920px] -translate-x-1/2" : ""}
+            >
+              <WorkRow
+                anchorId={project.id === "airdrop" ? "work-case-first-desktop" : undefined}
+                project={project}
+                isActive={project.id === activeId}
+                isOpen={project.id === openProjectId}
+                onHover={() => setActiveId(project.id)}
+                onToggleOpen={() =>
+                  setOpenProjectId((current) => (current === project.id ? null : project.id))
+                }
+              />
+            </div>
           ))}
         </div>
       </div>

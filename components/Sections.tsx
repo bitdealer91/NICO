@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { useId, useLayoutEffect, useRef, useState } from "react";
+import { useWideDesktop } from "@/lib/useWideDesktop";
 
 type Character = {
   id: "thinker" | "builder" | "creator" | "launcher";
@@ -198,6 +199,7 @@ const MARQUEE_BLOCK = MARQUEE_OFFSET_TOP + MARQUEE_BAND;
 const MARQUEE_TO_CARDS_GAP_PX = 20;
 
 export function Sections() {
+  const isWide = useWideDesktop();
   const reduceMotion = !!useReducedMotion();
   const cardsRef = useRef<HTMLDivElement>(null);
   const mobileCardsRef = useRef<HTMLDivElement>(null);
@@ -219,9 +221,78 @@ export function Sections() {
   return (
     <div className="relative z-10 overflow-hidden bg-[#F3F3F3] text-[#181818]">
       <section id="about" className="relative w-full flex-col pb-0 pt-10 lg:min-h-0 lg:snap-start lg:pb-0 lg:pt-14">
-        <div className="relative z-10 mx-auto hidden w-full max-w-[1440px] flex-col px-10 lg:flex">
+        {isWide ? (
+          <div className="relative hidden lg:block mx-auto" style={{ height: 598, width: 1920 }}>
+            {/* thinker decoration */}
+            <div className="pointer-events-none absolute z-0 h-[840px] w-[840px] rotate-90" style={{ left: -376, top: -129 }}>
+              <div className="relative isolate h-full w-full">
+                <div className="pointer-events-none absolute inset-0 z-0 bg-[#F3F3F3]" aria-hidden />
+                <video
+                  className="absolute inset-0 z-[1] h-full w-full object-contain mix-blend-darken"
+                  src="/characters/videos/thinker.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                />
+              </div>
+            </div>
+
+            {/* Curved watermark */}
+            <motion.div
+              className="absolute left-0 top-[-18px] z-10 h-auto w-[1920px] overflow-hidden will-change-transform"
+              style={{ height: marqueeHeight, opacity: marqueeOpacity, y: marqueeY }}
+            >
+              <div style={{ paddingTop: MARQUEE_OFFSET_TOP }}>
+                <CurvedLoopText bandPx={MARQUEE_BAND} alpha={0.1} />
+              </div>
+            </motion.div>
+
+            {/* Cards row */}
+            <div ref={cardsRef} className="absolute left-0 top-[98px] h-[500px] w-[1920px]">
+              {CHARACTERS.map((character) => {
+                const leftX: Record<(typeof character)["id"], number> = {
+                  thinker: 60,
+                  builder: 540,
+                  creator: 1020,
+                  launcher: 1500,
+                };
+                return (
+                  <div key={character.id} className="absolute top-0" style={{ left: leftX[character.id], width: 360 }}>
+                    <CharacterCard character={character} />
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Title */}
+            <div className="absolute left-[514px] top-[45px] z-[2] w-[1201px] -translate-y-1/2">
+              <p
+                className="select-none text-[40px] font-bold uppercase leading-[1.5] tracking-[-0.92px] text-[#181818]"
+                style={{ fontFamily: "var(--font-nav)" }}
+              >
+                NICO Studio is the launch crew behind modern digital products.
+              </p>
+            </div>
+
+            {/* Description */}
+            <div
+              className="absolute left-[514px] top-[295px] z-[2] w-[1181px] -translate-y-1/2 whitespace-pre-wrap font-sans text-[25px] leading-[1.5] tracking-[-0.575px] text-[#181818]"
+              style={{ fontFamily: "var(--font-sans)" }}
+            >
+              {`Founders bring the vision. We make it real.\n\nFrom strategy to design, from code to motion — we work as one team focused on one goal: launching products people want to use.\n\nNo disconnected freelancers. No slow handoffs.\nJust one crew moving fast from idea to launch.\n\nLanding pages in days. Complex platforms built for long-term growth. Idea, design, or just a vision — NICO Studio becomes your launch team.`}
+            </div>
+          </div>
+        ) : null}
+        <div
+          className={["relative z-10 mx-auto hidden w-full flex-col lg:flex", isWide ? "lg:hidden" : ""].join(" ")}
+          style={{ maxWidth: isWide ? 1920 : 1440, paddingLeft: isWide ? 0 : 40, paddingRight: isWide ? 0 : 40 }}
+        >
           {/* Figma: thinker decoration on the left, rotated right and partially clipped */}
-          <div className="pointer-events-none absolute -left-[316px] -top-[86px] z-0 h-[840px] w-[840px] rotate-90">
+          <div
+            className="pointer-events-none absolute z-0 h-[840px] w-[840px] rotate-90"
+            style={{ left: isWide ? -376 : -316, top: isWide ? -129 : -86 }}
+          >
             <div className="relative isolate h-full w-full">
               <div className="pointer-events-none absolute inset-0 z-0 bg-[#F3F3F3]" aria-hidden />
               <video
@@ -238,7 +309,7 @@ export function Sections() {
           <div className="relative z-10 flex flex-col gap-y-10 lg:gap-y-0">
             <div className="flex flex-1 flex-col gap-y-8 lg:flex-row lg:items-start lg:gap-x-0">
               <div className="hidden w-[38%] min-w-0 shrink-0 lg:block" aria-hidden />
-              <div className="max-w-[822px] flex-1">
+              <div className="flex-1" style={{ maxWidth: isWide ? 1201 : 822, marginLeft: isWide ? 514 : 0 }}>
                 <p
                   className="select-none text-[40px] font-bold uppercase leading-[1.5] tracking-[-0.92px] text-[#181818]"
                   style={{ fontFamily: "var(--font-nav)" }}
@@ -270,7 +341,7 @@ export function Sections() {
         </div>
 
         <motion.div
-          className="relative z-10 hidden w-full min-w-0 overflow-hidden will-change-transform lg:block"
+          className={["relative z-10 hidden w-full min-w-0 overflow-hidden will-change-transform lg:block", isWide ? "lg:hidden" : ""].join(" ")}
           style={{ height: marqueeHeight, opacity: marqueeOpacity, y: marqueeY }}
         >
           <div style={{ paddingTop: MARQUEE_OFFSET_TOP }}>
@@ -280,8 +351,8 @@ export function Sections() {
 
         <div
           ref={cardsRef}
-          className="relative z-10 mx-auto hidden w-full max-w-[1520px] px-10 lg:block"
-          style={{ marginTop: MARQUEE_TO_CARDS_GAP_PX }}
+          className={["relative z-10 mx-auto hidden w-full lg:block", isWide ? "lg:hidden" : ""].join(" ")}
+          style={{ maxWidth: isWide ? 1920 : 1520, marginTop: MARQUEE_TO_CARDS_GAP_PX, paddingLeft: isWide ? 0 : 40, paddingRight: isWide ? 0 : 40 }}
         >
           {/*
             Контент 1440 (= 4×360): при max-w-[1440px]+px-10 ячейка ~340 и крайний столбец «плывёт». 1520 = 1440+80 паддингов.

@@ -4,6 +4,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion
 import { useId, useLayoutEffect, useRef, useState } from "react";
 
 import { ConnectModal } from "@/components/ConnectModal";
+import { useWideDesktop } from "@/lib/useWideDesktop";
 
 /** Spaces in filenames are unreliable via next/image optimizer; `<img>` from `public/` is stable. */
 const CONTACT_ELLIPSE_SRC = "/figma/Ellipse%2027.png";
@@ -61,6 +62,7 @@ function ContactCurvedLoopText({ bandPx = 120 }: { bandPx?: number }) {
 }
 
 export function ContactSection() {
+  const isWide = useWideDesktop();
   const [open, setOpen] = useState(false);
   const reduceMotion = !!useReducedMotion();
   const videoRef = useRef<HTMLDivElement>(null);
@@ -100,7 +102,9 @@ export function ContactSection() {
 
       <div id="contact-nav-anchor-desktop" className="hidden h-0 w-full scroll-mt-0 lg:block" />
       <div id="contact-media-start-desktop" ref={videoRef} className="relative mt-6 hidden lg:block">
-        <div className="relative h-[38vw] min-h-[220px] w-full max-h-[560px] overflow-hidden">
+        <div
+          className={["relative mx-auto overflow-hidden", isWide ? "h-[802px] w-[1431px]" : "h-[38vw] min-h-[220px] w-full max-h-[560px]"].join(" ")}
+        >
           <div className="relative isolate h-full w-full">
             <div className="pointer-events-none absolute inset-0 z-0 bg-[#F3F3F3]" aria-hidden />
             <video
@@ -121,8 +125,8 @@ export function ContactSection() {
             width={662}
             height={74}
             decoding="async"
-            className="pointer-events-none mx-auto block h-auto w-[min(100%,920px)] max-w-none -translate-y-3 select-none opacity-[0.48] [filter:saturate(1)_brightness(0.93)_contrast(1.04)] will-change-transform lg:-translate-y-3.5"
-            style={{ mixBlendMode: "darken" }}
+            className="pointer-events-none mx-auto block h-auto max-w-none -translate-y-3 select-none opacity-[0.48] [filter:saturate(1)_brightness(0.93)_contrast(1.04)] will-change-transform lg:-translate-y-3.5"
+            style={{ mixBlendMode: "darken", width: isWide ? 1072 : "min(100%,920px)" }}
           />
         </div>
       </div>

@@ -1,10 +1,17 @@
+"use client";
+
 import Image from "next/image";
+import { useWideDesktop } from "@/lib/useWideDesktop";
 
 export function Footer() {
+  const isWide = useWideDesktop();
   return (
-    <footer className="relative mx-auto w-full max-w-[1440px] bg-[#F3F3F3] px-[10px] pb-8 text-[#181818] lg:h-[268px] lg:snap-start lg:pb-0">
+    <footer
+      className="relative mx-auto w-full bg-[#F3F3F3] px-[10px] pb-8 text-[#181818] lg:h-[268px] lg:snap-start lg:pb-0"
+      style={{ maxWidth: isWide ? 1360 : 1440 }}
+    >
       <div className="relative hidden h-full w-full lg:block">
-        <div className="absolute left-[40px] top-0 h-[174px] w-[268px]">
+        <div className="absolute left-0 top-[7px] h-[174px] w-[268px]">
           <Image src="/figma/logo.png" alt="NICO studio" fill className="object-contain" priority />
         </div>
 
@@ -40,7 +47,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="-translate-y-1/2 absolute left-[40px] top-[227px]">
+        <div className="-translate-y-1/2 absolute left-0 top-[234px]">
           <p
             className="font-sans text-[15px] font-normal leading-[20px] text-[#181818]"
             style={{ fontFamily: "var(--font-sans)" }}
