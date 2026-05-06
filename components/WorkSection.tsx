@@ -303,8 +303,11 @@ export function WorkSection() {
   return (
     <section
       id="work"
-      className="relative mx-auto mt-10 flex flex-col bg-[#F3F3F3] px-[10px] pb-0 pt-0 text-[#181818] lg:mt-10 lg:pb-0"
-      style={{ maxWidth: isWide ? 1530 : 1440, paddingLeft: isWide ? 0 : 45, paddingRight: isWide ? 0 : 45 }}
+      className={[
+        "relative mx-auto mt-10 flex flex-col bg-[#F3F3F3] px-0 pb-0 pt-0 text-[#181818] lg:mt-10 lg:pb-0",
+        !isWide ? "lg:pl-[45px] lg:pr-[45px]" : "",
+      ].join(" ")}
+      style={{ maxWidth: isWide ? 1530 : 1440 }}
     >
       {/* Figma: WORK watermark + rows with 24px gap */}
       <div className="hidden w-full flex-col gap-6 lg:flex">
@@ -317,7 +320,7 @@ export function WorkSection() {
         <div id="work-nav-anchor-desktop" className="h-0 w-full scroll-mt-0" />
         <div
           ref={rowsRef}
-          className={isWide ? "flex w-[1440px] flex-col gap-6 overflow-hidden" : "flex w-full flex-col gap-6"}
+          className={isWide ? "flex w-[1440px] flex-col gap-6" : "flex w-full flex-col gap-6"}
           style={isWide ? { transform: "translateX(-196px)" } : undefined}
         >
           {PROJECTS.map((project) => (
@@ -339,19 +342,33 @@ export function WorkSection() {
       {/* Tablet & mobile layout */}
       <div className="flex w-full flex-col gap-4 lg:hidden">
         <motion.div
-          className="-mx-[10px] overflow-hidden"
+          className="overflow-hidden"
           style={{ height: mobileTitleHeight, opacity: mobileTitleOpacity, y: mobileTitleY }}
         >
           <WorkCurvedLoopText bandPx={50} />
         </motion.div>
         <div id="work-nav-anchor-mobile" className="h-0 w-full scroll-mt-0" />
-        <div ref={mobileRowsRef} className="flex flex-col gap-3">
+        <div ref={mobileRowsRef} className="flex flex-col gap-6">
           {PROJECTS.map((project) => (
             <div
               key={project.id}
               id={project.id === "airdrop" ? "work-case-first-mobile" : undefined}
               className="relative overflow-hidden bg-[#F3F3F3]"
             >
+              {(() => {
+                const mobileThumbStyle =
+                  project.id === "airdrop"
+                    ? { left: "calc(58.33% + 4.5px)", top: 0, width: 136, height: 95 }
+                    : project.id === "lootbox"
+                      ? { left: "calc(66.67% - 16px)", top: 3, width: 137, height: 90 }
+                      : { left: "calc(66.67% - 10px)", top: 4, width: 137, height: 88 };
+                const mobileUnderlineStyle =
+                  project.id === "airdrop"
+                    ? { left: "calc(33.33% + 6px)" }
+                    : project.id === "lootbox"
+                      ? { left: "calc(41.67% + 18.5px)" }
+                      : { left: "calc(33.33% + 19px)" };
+                return (
               <button
                 type="button"
                 className="relative block h-full w-full text-left"
@@ -364,31 +381,35 @@ export function WorkSection() {
               >
                 <div className="relative h-[95px]">
                 <span
-                  className="absolute left-4 top-[21px] font-sans text-[14px] leading-[20px] text-[#181818]"
+                  className="absolute left-[16px] top-[31px] -translate-y-1/2 font-sans text-[14px] leading-[20px] text-[#181818]"
                   style={openProjectId === project.id ? { fontWeight: 800 } : undefined}
                 >
                   {project.index}
                 </span>
                 <span
-                  className="absolute left-[35px] top-[32px] text-[25px] font-bold leading-none tracking-[-0.575px] text-[#181818]"
+                  className="absolute left-[35px] top-[55.5px] -translate-y-1/2 whitespace-nowrap text-[25px] font-bold leading-[68.26px] tracking-[-0.575px] text-[#181818]"
                   style={{ fontFamily: "var(--font-nav)" }}
                 >
                   {project.title}
                 </span>
-                {openProjectId !== project.id ? <span className="absolute left-[132px] top-[76px] h-px w-[61px] bg-[#181818]" /> : null}
                 {openProjectId !== project.id ? (
-                  <div className="absolute right-4 top-[3px] h-[90px] w-[137px] overflow-hidden">
+                  <span className="absolute top-[77px] h-px w-[61px] bg-[#181818]" style={mobileUnderlineStyle} />
+                ) : null}
+                {openProjectId !== project.id ? (
+                  <div className="absolute overflow-hidden" style={mobileThumbStyle}>
                     <Image
                       src={project.imageSrc}
                       alt=""
                       fill
                       className={project.id === activeId ? "object-cover" : "object-cover grayscale"}
-                      sizes="137px"
+                      sizes="(max-width:1023px) 137px, 137px"
                     />
                   </div>
                 ) : null}
                 </div>
               </button>
+                );
+              })()}
               <AnimatePresence initial={false}>
                 {openProjectId === project.id ? (
                   <motion.div
