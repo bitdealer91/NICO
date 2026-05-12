@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 
 import type { Character } from "@/lib/characters";
 import { ArcNav } from "@/components/ArcNav";
-import { useTabletPortrait } from "@/lib/useTabletLandscape";
+import { useMobileLandscape, useTabletPortrait } from "@/lib/useTabletLandscape";
 
 /** Как в ContactSection — мягкая «платформа» под видео-персонажа. */
 const HERO_ELLIPSE_SHADOW_SRC = "/figma/Ellipse%2027.png";
@@ -136,6 +136,7 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
   const hasNext = activeIndex < items.length - 1;
   const mobileVideoFor = (item: Character | null) => item?.mobileVideoSrc ?? item?.videoSrc;
   const isTabletPortrait = useTabletPortrait();
+  const isMobileLandscape = useMobileLandscape();
   /** Figma phone `261:33` — base 390; tablet portrait `793:5354` — base 768 (те же 601×898 слоты, другие вертикальные оффсеты). */
   const u = (px: number) =>
     isTabletPortrait ? `calc(${px} * (100vw / 768))` : `calc(${px} * (100vw / 390))`;
@@ -359,8 +360,18 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
       {/* Mobile — Figma `261:33`; tablet portrait — изначально `793:5354`, вертикаль чуть выше макета — на 1024px высоты хватает места. */}
       <div className="relative flex min-h-0 min-w-0 w-full flex-1 flex-col lg:hidden">
         <div
-          className="relative z-20 shrink-0 px-[var(--mobile-gutter)] text-center"
-          style={{ paddingTop: isTabletPortrait ? u(118) : u(120) }}
+          className={[
+            "relative z-20 shrink-0 px-[var(--mobile-gutter)]",
+            isMobileLandscape ? "text-left" : "text-center",
+          ].join(" ")}
+          style={{
+            paddingTop: isMobileLandscape
+              ? // Шапка absolute — опускаем заголовок ниже лого (как высота блока в Header mobile).
+                "calc(env(safe-area-inset-top, 0px) + var(--mobile-gutter) + var(--mobile-logo-h) + 16px)"
+              : isTabletPortrait
+                ? u(118)
+                : u(120),
+          }}
         >
           <div className="select-none leading-[0.86] tracking-[-0.023em]">
             <div className="font-bold text-[#181818]" style={{ fontFamily: "var(--font-nav)", fontSize: "var(--mobile-hero-title-size)" }}>
@@ -381,7 +392,9 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
         {/* Gap Title → Visual */}
         <div
           className="relative z-10 flex min-h-0 w-full flex-1 flex-col justify-end"
-          style={{ paddingTop: isTabletPortrait ? u(6) : u(27) }}
+          style={{
+            paddingTop: isMobileLandscape ? "clamp(4px, 1.5vh, 14px)" : isTabletPortrait ? u(6) : u(27),
+          }}
         >
           {/* Visual: ширина > viewport — без overflow-* на родителях hero, чтобы не резать края арта (html/body режут только ось X) */}
           <div className="relative left-1/2 shrink-0 overflow-visible -translate-x-1/2" style={{ width: u(601) }}>

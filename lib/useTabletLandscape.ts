@@ -35,3 +35,21 @@ export function useTabletPortrait() {
 
   return isTabletPortrait;
 }
+
+/** Телефон в альбоме: узкая высота viewport — герой без наложения заголовка на персонажа. Не iPad landscape (обычно ≥600px по высоте). */
+const MOBILE_LANDSCAPE_QUERY = "(orientation: landscape) and (max-height: 560px)";
+
+export function useMobileLandscape() {
+  const [isMobileLandscape, setIsMobileLandscape] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia(MOBILE_LANDSCAPE_QUERY);
+    const apply = () => setIsMobileLandscape(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
+  return isMobileLandscape;
+}
