@@ -4,16 +4,21 @@ import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion
 import { useId, useLayoutEffect, useRef, useState } from "react";
 
 import { ConnectModal } from "@/components/ConnectModal";
+import { MOBILE_CURVED_MARQUEE_BAND_PX } from "@/lib/marquee";
 import { useWideDesktop } from "@/lib/useWideDesktop";
+import { useTabletLandscape } from "@/lib/useTabletLandscape";
 
 /** Spaces in filenames are unreliable via next/image optimizer; `<img>` from `public/` is stable. */
 const CONTACT_ELLIPSE_SRC = "/figma/Ellipse%2027.png";
+
+/** Длинная строка по длине кривой — иначе лента визуально «кончается» на широкой полосе. */
+const CONNECT_LOOP_UNIT = "LET'S CONNECT  •  LET'S CONNECT  •  ";
 
 function ContactCurvedLoopText({ bandPx = 120 }: { bandPx?: number }) {
   const pathId = useId();
   const hostRef = useRef<HTMLDivElement>(null);
   const [wPx, setWPx] = useState(1404);
-  const loopText = "LET'S CONNECT  •  LET'S CONNECT  •  LET'S CONNECT  •  LET'S CONNECT  •  ";
+  const loopText = CONNECT_LOOP_UNIT.repeat(12);
 
   useLayoutEffect(() => {
     const el = hostRef.current;
@@ -34,14 +39,19 @@ function ContactCurvedLoopText({ bandPx = 120 }: { bandPx?: number }) {
   const fontSize = 0.78 * vbH;
 
   return (
-    <div ref={hostRef} className="pointer-events-none relative w-full min-w-0 select-none" style={{ height: bandPx }} aria-hidden>
-      <svg viewBox={`0 0 ${vbW} ${vbH}`} className="h-full w-full" preserveAspectRatio="xMidYMid meet">
+    <div
+      ref={hostRef}
+      className="pointer-events-none relative w-full min-w-0 max-w-full select-none overflow-visible"
+      style={{ height: bandPx }}
+      aria-hidden
+    >
+      <svg viewBox={`0 0 ${vbW} ${vbH}`} className="h-full w-full overflow-visible" preserveAspectRatio="xMidYMid meet" overflow="visible">
         <defs>
           <path id={pathId} d={pathD} fill="none" />
         </defs>
         <text
           fill="#181818"
-          className="font-bold opacity-10"
+          className="font-bold"
           style={{
             fontFamily: "var(--font-nav), Oswald, sans-serif",
             fontSize,
@@ -49,6 +59,7 @@ function ContactCurvedLoopText({ bandPx = 120 }: { bandPx?: number }) {
             letterSpacing: "-0.023em",
             textTransform: "uppercase",
             dominantBaseline: "middle",
+            opacity: 0.1,
           }}
         >
           <textPath href={`#${pathId}`} startOffset="0%">
@@ -63,6 +74,7 @@ function ContactCurvedLoopText({ bandPx = 120 }: { bandPx?: number }) {
 
 export function ContactSection() {
   const isWide = useWideDesktop();
+  const isTabletLandscape = useTabletLandscape();
   const [open, setOpen] = useState(false);
   const reduceMotion = !!useReducedMotion();
   const videoRef = useRef<HTMLDivElement>(null);
@@ -79,29 +91,36 @@ export function ContactSection() {
   const titleY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : -32]);
   const titleHeight = useTransform(scrollYProgress, [0, 1], [120, 0]);
   const mobileTitleOpacity = useTransform(mobileProgress, [0, 0.85], [1, 0]);
-  const mobileTitleY = useTransform(mobileProgress, [0, 0.85], [0, reduceMotion ? 0 : -22]);
-  const mobileTitleHeight = useTransform(mobileProgress, [0, 0.85], [50, 0]);
+  const mobileTitleY = useTransform(mobileProgress, [0, 0.85], [0, reduceMotion ? 0 : -18]);
+  const mobileTitleHeight = useTransform(mobileProgress, [0, 0.85], [MOBILE_CURVED_MARQUEE_BAND_PX, 0]);
 
   return (
     <section
       id="contact"
-      className="relative w-full overflow-x-hidden overflow-y-visible bg-[#F3F3F3] pb-16 pt-10 text-[#181818] lg:pb-24 lg:pt-10"
+      className="relative w-full overflow-x-visible overflow-y-visible bg-[#F3F3F3] pb-10 pt-10 text-[#181818] lg:pb-8 lg:pt-10"
     >
       <motion.div
-        className="relative z-10 hidden w-full overflow-hidden will-change-transform lg:block"
+        className={["relative z-10 hidden w-full overflow-visible will-change-transform lg:block", isTabletLandscape ? "lg:hidden" : ""].join(" ")}
         style={{ height: titleHeight, opacity: titleOpacity, y: titleY }}
       >
         <ContactCurvedLoopText />
       </motion.div>
       <motion.div
-        className="relative z-10 w-full overflow-hidden will-change-transform lg:hidden"
-        style={{ height: mobileTitleHeight, opacity: mobileTitleOpacity, y: mobileTitleY }}
+        className={[
+          "relative z-10 w-full overflow-visible will-change-transform",
+          isTabletLandscape ? "left-1/2 w-screen max-w-none -translate-x-1/2 block" : "lg:hidden",
+        ].join(" ")}
+        style={{
+          height: mobileTitleHeight,
+          opacity: mobileTitleOpacity,
+          y: mobileTitleY,
+        }}
       >
-        <ContactCurvedLoopText bandPx={50} />
+        <ContactCurvedLoopText bandPx={MOBILE_CURVED_MARQUEE_BAND_PX} />
       </motion.div>
 
-      <div id="contact-nav-anchor-desktop" className="hidden h-0 w-full scroll-mt-0 lg:block" />
-      <div id="contact-media-start-desktop" ref={videoRef} className="relative mt-6 hidden lg:block">
+      <div id="contact-nav-anchor-desktop" className={["hidden h-0 w-full scroll-mt-0 lg:block", isTabletLandscape ? "lg:hidden" : ""].join(" ")} />
+      <div id="contact-media-start-desktop" ref={videoRef} className={["relative mt-6 hidden lg:block", isTabletLandscape ? "lg:hidden" : ""].join(" ")}>
         <div
           className={["relative mx-auto overflow-hidden", isWide ? "h-[802px] w-[1431px]" : "h-[38vw] min-h-[220px] w-full max-h-[560px]"].join(" ")}
         >
@@ -131,7 +150,7 @@ export function ContactSection() {
         </div>
       </div>
 
-      <div className="relative mt-2 lg:hidden">
+      <div className={["relative mt-2", isTabletLandscape ? "block" : "lg:hidden"].join(" ")}>
         <div className="relative h-[234px] w-full overflow-hidden">
           <div className="relative isolate h-full w-full">
             <div className="pointer-events-none absolute inset-0 z-0 bg-[#F3F3F3]" aria-hidden />

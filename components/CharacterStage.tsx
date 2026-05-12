@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 
 import type { Character } from "@/lib/characters";
 import { ArcNav } from "@/components/ArcNav";
+import { useTabletPortrait } from "@/lib/useTabletLandscape";
 
 /** Как в ContactSection — мягкая «платформа» под видео-персонажа. */
 const HERO_ELLIPSE_SHADOW_SRC = "/figma/Ellipse%2027.png";
@@ -15,7 +16,7 @@ type CharacterStageProps = {
   activeIndex: number;
   reduceMotion?: boolean;
   onSelectIndex?: (index: number) => void;
-  desktopLayout?: "standard" | "wide";
+  desktopLayout?: "standard" | "wide" | "tablet";
 };
 
 function CharacterVisual({
@@ -134,28 +135,36 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
   const hasPrev = activeIndex > 0;
   const hasNext = activeIndex < items.length - 1;
   const mobileVideoFor = (item: Character | null) => item?.mobileVideoSrc ?? item?.videoSrc;
-  /** Figma phone (390) → scale: multiply px by (100vw/390). */
-  const m = (px: number) => `calc(${px} * (100vw / 390))`;
+  const isTabletPortrait = useTabletPortrait();
+  /** Figma phone `261:33` — base 390; tablet portrait `793:5354` — base 768 (те же 601×898 слоты, другие вертикальные оффсеты). */
+  const u = (px: number) =>
+    isTabletPortrait ? `calc(${px} * (100vw / 768))` : `calc(${px} * (100vw / 390))`;
+  /** Только визуал: не двигает поток, полукруг не уезжает. */
+  const tabletHeroScale = isTabletPortrait ? 1.1 : 1;
   const isWide = desktopLayout === "wide";
+  const isTablet = desktopLayout === "tablet";
 
   return (
     <div
       className="relative mx-auto flex h-full min-h-0 min-w-0 w-full flex-1 flex-col lg:block lg:flex-none"
-      style={{ maxWidth: isWide ? 1920 : 1440 }}
+      style={{ maxWidth: isWide ? 1920 : isTablet ? 1024 : 1440 }}
     >
       {/* Desktop (pixel-ish to Figma) */}
       <div className="hidden h-full lg:block">
         <h1
           className={[
             "absolute z-30 select-none text-[#181818]",
-            isWide ? "left-[40px] top-[371px]" : "left-[40px] top-[321px]",
+            isWide ? "left-[40px] top-[371px]" : isTablet ? "left-[40px] top-[321px]" : "left-[40px] top-[321px]",
           ].join(" ")}
           style={{ fontFamily: "var(--font-nav)" }}
         >
           {/* Figma / Name Crew: Oswald 120 / 700 / LH 100% / LS -2.76px */}
-          <div className="text-[120px] font-bold leading-[100%] tracking-[-2.76px]">THE</div>
-          <div className="text-[120px] font-bold leading-[100%] tracking-[-2.76px]">LAUNCH</div>
-          <div className="text-[120px] font-bold leading-[100%] tracking-[-2.76px]" style={{ color: active.roleColor ?? "#EBB55C" }}>
+          <div className={isTablet ? "text-[100px] font-bold leading-[100%] tracking-[-2.3px]" : "text-[120px] font-bold leading-[100%] tracking-[-2.76px]"}>THE</div>
+          <div className={isTablet ? "text-[100px] font-bold leading-[100%] tracking-[-2.3px]" : "text-[120px] font-bold leading-[100%] tracking-[-2.76px]"}>LAUNCH</div>
+          <div
+            className={isTablet ? "text-[100px] font-bold leading-[100%] tracking-[-2.3px]" : "text-[120px] font-bold leading-[100%] tracking-[-2.76px]"}
+            style={{ color: active.roleColor ?? "#EBB55C" }}
+          >
             CREW
           </div>
         </h1>
@@ -164,6 +173,43 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
         {isWide ? (
           // Wide desktop: Figma 1920×1080, hero media at (540, 242) size 840×840.
           <div className="absolute left-[540px] top-[242px] z-10 h-[840px] w-[840px]">
+            <div className="relative h-full w-full">
+              {reduceMotion ? (
+                <CharacterVisual
+                  fillSlot
+                  videoSrc={active.videoSrc}
+                  src={active.imageSrc}
+                  id={active.id}
+                  reduceMotion
+                  scale={active.stageScale}
+                  translateY={active.stageTranslateY}
+                />
+              ) : (
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={active.id}
+                    className="h-full w-full"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <CharacterVisual
+                      fillSlot
+                      videoSrc={active.videoSrc}
+                      src={active.imageSrc}
+                      id={active.id}
+                      scale={active.stageScale}
+                      translateY={active.stageTranslateY}
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              )}
+            </div>
+          </div>
+        ) : isTablet ? (
+          // Tablet landscape (1024x768): dedicated hero slot from Figma.
+          <div className="absolute left-[227px] top-[193px] z-10 h-[549px] w-[549px]">
             <div className="relative h-full w-full">
               {reduceMotion ? (
                 <CharacterVisual
@@ -253,7 +299,7 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
         <div
           className={[
             "absolute z-30 w-[261px]",
-            isWide ? "left-[1624px] top-[375px]" : "left-[79.4444444%] top-[325px] w-[18.125%] max-w-[261px]",
+            isWide ? "left-[1624px] top-[375px]" : isTablet ? "left-[728px] top-[325px]" : "left-[79.4444444%] top-[325px] w-[18.125%] max-w-[261px]",
           ].join(" ")}
         >
           {reduceMotion ? (
@@ -303,16 +349,19 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
         <div
           className={[
             "absolute bottom-0 left-1/2 z-50 -translate-x-1/2",
-            isWide ? "w-[968px] max-w-none" : "w-full max-w-[min(1187px,calc(100%-40px))]",
+            isWide ? "w-[968px] max-w-none" : isTablet ? "w-[847px] max-w-none" : "w-full max-w-[min(1187px,calc(100%-40px))]",
           ].join(" ")}
         >
           <ArcNav items={items} activeIndex={activeIndex} onSelectIndex={onSelectIndex} />
         </div>
       </div>
 
-      {/* Mobile — Figma `261:33` phone: Visual `750:454` (601×898), Circle `261:450` white circle on #f3f3f3 (arc = circle edge) */}
+      {/* Mobile — Figma `261:33`; tablet portrait — изначально `793:5354`, вертикаль чуть выше макета — на 1024px высоты хватает места. */}
       <div className="relative flex min-h-0 min-w-0 w-full flex-1 flex-col lg:hidden">
-        <div className="relative z-20 shrink-0 px-[var(--mobile-gutter)] text-center" style={{ paddingTop: m(120) }}>
+        <div
+          className="relative z-20 shrink-0 px-[var(--mobile-gutter)] text-center"
+          style={{ paddingTop: isTabletPortrait ? u(118) : u(120) }}
+        >
           <div className="select-none leading-[0.86] tracking-[-0.023em]">
             <div className="font-bold text-[#181818]" style={{ fontFamily: "var(--font-nav)", fontSize: "var(--mobile-hero-title-size)" }}>
               THE
@@ -330,16 +379,20 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
         </div>
 
         {/* Gap Title → Visual */}
-        <div className="relative z-10 flex min-h-0 w-full flex-1 flex-col justify-end" style={{ paddingTop: m(27) }}>
+        <div
+          className="relative z-10 flex min-h-0 w-full flex-1 flex-col justify-end"
+          style={{ paddingTop: isTabletPortrait ? u(6) : u(27) }}
+        >
           {/* Visual: ширина > viewport — без overflow-* на родителях hero, чтобы не резать края арта (html/body режут только ось X) */}
-          <div className="relative left-1/2 shrink-0 overflow-visible -translate-x-1/2" style={{ width: m(601) }}>
+          <div className="relative left-1/2 shrink-0 overflow-visible -translate-x-1/2" style={{ width: u(601) }}>
             {/* Character: overlap with arc; если arcLower отодвигает CircleBlock вниз — mb компенсирует */}
             <div
               className="relative z-[1] mx-auto flex justify-center overflow-visible"
               style={{
-                width: m(398),
-                marginTop: m(-43),
-                marginBottom: m(-102),
+                width: u(398),
+                marginTop: isTabletPortrait ? u(18) : u(-43),
+                marginBottom: isTabletPortrait ? u(-202) : u(-122),
+                ...(isTabletPortrait ? { transform: `translateY(${u(-150)})` } : {}),
               }}
             >
                 {reduceMotion ? (
@@ -350,7 +403,7 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
                       src={active.imageSrc}
                       id={active.id}
                       reduceMotion
-                      scale={active.stageScale}
+                      scale={(active.stageScale ?? 1) * tabletHeroScale}
                       translateY={active.stageTranslateY}
                     />
                   </div>
@@ -377,7 +430,7 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
                         videoSrc={mobileVideoFor(active)}
                         src={active.imageSrc}
                         id={active.id}
-                        scale={active.stageScale}
+                        scale={(active.stageScale ?? 1) * tabletHeroScale}
                         translateY={active.stageTranslateY}
                       />
                     </motion.div>
@@ -388,31 +441,36 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
             {/* CircleBlock: текст в потоке задаёт высоту; ниже только фон + диск режутся overflow-hidden */}
             <div
               className="pointer-events-none relative z-[15] mx-auto shrink-0 overflow-visible"
-              style={{ width: m(601), transform: `translateY(${m(28)})` }}
+              style={{
+                width: u(601),
+                transform: `translateY(${isTabletPortrait ? u(24) : u(14)})`,
+              }}
             >
               <div
                 className="relative z-20 mx-auto flex w-full max-w-[100%] flex-col items-center text-center pointer-events-none"
                 style={{
-                  paddingTop: m(78),
-                  paddingBottom: `max(${m(20)}, calc(env(safe-area-inset-bottom, 0px) + ${m(12)}))`,
-                  paddingLeft: m(170),
-                  paddingRight: m(170),
+                  paddingTop: isTabletPortrait ? u(54) : u(78),
+                  paddingBottom: isTabletPortrait
+                    ? `max(${u(12)}, calc(env(safe-area-inset-bottom, 0px) + ${u(8)}))`
+                    : `max(${u(20)}, calc(env(safe-area-inset-bottom, 0px) + ${u(12)}))`,
+                  paddingLeft: u(170),
+                  paddingRight: u(170),
                 }}
               >
-                <div className="pointer-events-auto w-full" style={{ maxWidth: m(261) }}>
+                <div className="pointer-events-auto w-full" style={{ maxWidth: u(261) }}>
                   <div
                     className="font-bold leading-[1.5] tracking-[-0.575px] uppercase"
                     style={{
                       color: active.roleColor ?? "var(--gold)",
                       fontFamily: "var(--font-nav)",
-                      fontSize: m(25),
+                      fontSize: u(25),
                     }}
                   >
                     {active.roleTitle}
                   </div>
                   <div
                     className="mx-auto mt-3 max-w-full whitespace-pre-line font-sans leading-[1.5] tracking-[-0.322px] text-[#181818]"
-                    style={{ fontSize: m(14) }}
+                    style={{ fontSize: u(14) }}
                   >
                     {active.roleBody.join("\n\n")}
                   </div>
@@ -437,7 +495,7 @@ export function CharacterStage({ items, activeIndex, reduceMotion, onSelectIndex
               <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
                 <div
                   className="pointer-events-none absolute left-1/2 top-0 z-[5] aspect-square max-w-none -translate-x-1/2"
-                  style={{ width: m(601) }}
+                  style={{ width: u(601) }}
                 >
                   <Image
                     src="/figma/hero-mobile-circle.svg"

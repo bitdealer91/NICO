@@ -4,6 +4,8 @@ import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { useWideDesktop } from "@/lib/useWideDesktop";
+import { MOBILE_CURVED_MARQUEE_BAND_PX } from "@/lib/marquee";
+import { useTabletLandscape, useTabletPortrait } from "@/lib/useTabletLandscape";
 
 type WorkProject = {
   id: "airdrop" | "lootbox" | "web3";
@@ -66,11 +68,14 @@ type WorkMediaProps = {
   grayscale?: boolean;
 };
 
+/** Длинная строка по длине кривой — иначе на широких экранах лента «обрывается». Анимация -50% как у WE CALL. */
+const WORK_LOOP_UNIT = "WORK  •  WORK  •  WORK  •  WORK  •  ";
+
 function WorkCurvedLoopText({ bandPx = 120 }: { bandPx?: number }) {
   const pathId = useId();
   const hostRef = useRef<HTMLDivElement>(null);
   const [wPx, setWPx] = useState(1404);
-  const loopText = "WORK  WORK  WORK  WORK  WORK  WORK  WORK  WORK  ";
+  const loopText = WORK_LOOP_UNIT.repeat(10);
 
   useLayoutEffect(() => {
     const el = hostRef.current;
@@ -91,14 +96,19 @@ function WorkCurvedLoopText({ bandPx = 120 }: { bandPx?: number }) {
   const fontSize = 0.78 * vbH;
 
   return (
-    <div ref={hostRef} className="relative w-full min-w-0 select-none" style={{ height: bandPx }} aria-hidden>
-      <svg viewBox={`0 0 ${vbW} ${vbH}`} className="h-full w-full" preserveAspectRatio="xMidYMid meet">
+    <div
+      ref={hostRef}
+      className="pointer-events-none relative w-full min-w-0 max-w-full select-none overflow-visible"
+      style={{ height: bandPx }}
+      aria-hidden
+    >
+      <svg viewBox={`0 0 ${vbW} ${vbH}`} className="h-full w-full overflow-visible" preserveAspectRatio="xMidYMid meet" overflow="visible">
         <defs>
           <path id={pathId} d={pathD} fill="none" />
         </defs>
         <text
           fill="#181818"
-          className="font-bold opacity-10"
+          className="font-bold"
           style={{
             fontFamily: "var(--font-nav), Oswald, sans-serif",
             fontSize,
@@ -106,6 +116,7 @@ function WorkCurvedLoopText({ bandPx = 120 }: { bandPx?: number }) {
             letterSpacing: "-0.023em",
             textTransform: "uppercase",
             dominantBaseline: "middle",
+            opacity: 0.1,
           }}
         >
           <textPath href={`#${pathId}`} startOffset="0%">
@@ -285,6 +296,10 @@ function WorkRow({ project, isActive, isOpen, isWide, onHover, onToggleOpen, anc
 
 export function WorkSection() {
   const isWide = useWideDesktop();
+  const isTabletLandscape = useTabletLandscape();
+  const isTabletPortrait = useTabletPortrait();
+  /** Свернутый ряд 95px и типографика 39/58 как в Figma tablet — для landscape и portrait. */
+  const isTabletWorkRow = isTabletLandscape || isTabletPortrait;
   const [activeId, setActiveId] = useState<WorkProject["id"]>("airdrop");
   const [openProjectId, setOpenProjectId] = useState<WorkProject["id"] | null>(null);
   const reduceMotion = !!useReducedMotion();
@@ -303,7 +318,7 @@ export function WorkSection() {
   const titleHeight = useTransform(scrollYProgress, [0, 1], [120, 0]);
   const mobileTitleOpacity = useTransform(mobileRowsProgress, [0, 0.45], [1, 0]);
   const mobileTitleY = useTransform(mobileRowsProgress, [0, 0.45], [0, reduceMotion ? 0 : -18]);
-  const mobileTitleHeight = useTransform(mobileRowsProgress, [0, 0.45], [50, 0]);
+  const mobileTitleHeight = useTransform(mobileRowsProgress, [0, 0.45], [MOBILE_CURVED_MARQUEE_BAND_PX, 0]);
 
   useEffect(() => {
     function openFirstCase() {
@@ -326,14 +341,16 @@ export function WorkSection() {
       id="work"
       className={[
         "relative mx-auto mt-10 flex flex-col bg-[#F3F3F3] px-0 pb-0 pt-0 text-[#181818] lg:mt-10 lg:pb-0",
-        !isWide ? "lg:pl-[45px] lg:pr-[45px]" : "",
+        !isWide && !isTabletLandscape ? "lg:pl-[45px] lg:pr-[45px]" : "",
       ].join(" ")}
-      style={{ maxWidth: isWide ? 1530 : 1440 }}
+      style={{
+        maxWidth: isWide ? 1530 : isTabletLandscape ? "100%" : isTabletPortrait ? 768 : 1440,
+      }}
     >
       {/* Figma: WORK watermark + rows with 24px gap */}
-      <div className="hidden w-full flex-col gap-6 lg:flex">
+      <div className={["hidden w-full flex-col gap-6 lg:flex", isTabletLandscape ? "lg:hidden" : ""].join(" ")}>
         <motion.div
-          className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden will-change-transform"
+          className="relative left-1/2 w-screen -translate-x-1/2 overflow-visible will-change-transform"
           style={{ height: titleHeight, opacity: titleOpacity, y: titleY }}
         >
           <WorkCurvedLoopText />
@@ -361,34 +378,67 @@ export function WorkSection() {
       </div>
 
       {/* Tablet & mobile layout */}
-      <div className="flex w-full flex-col gap-4 lg:hidden">
+      <div className={["flex w-full flex-col gap-4", isTabletLandscape ? "block" : "lg:hidden"].join(" ")}>
         <motion.div
-          className="overflow-hidden"
-          style={{ height: mobileTitleHeight, opacity: mobileTitleOpacity, y: mobileTitleY }}
+          className={
+            isTabletWorkRow
+              ? "relative left-1/2 w-screen max-w-none -translate-x-1/2 overflow-visible"
+              : "overflow-visible"
+          }
+          style={{
+            height: mobileTitleHeight,
+            opacity: mobileTitleOpacity,
+            y: mobileTitleY,
+          }}
         >
-          <WorkCurvedLoopText bandPx={50} />
+          <WorkCurvedLoopText bandPx={MOBILE_CURVED_MARQUEE_BAND_PX} />
         </motion.div>
         <div id="work-nav-anchor-mobile" className="h-0 w-full scroll-mt-0" />
-        <div ref={mobileRowsRef} className="flex flex-col gap-6">
+        <div ref={mobileRowsRef} className={isTabletLandscape ? "flex flex-col gap-0" : "flex flex-col gap-6"}>
           {PROJECTS.map((project) => (
             <div
               key={project.id}
               id={project.id === "airdrop" ? "work-case-first-mobile" : undefined}
-              className="relative overflow-hidden bg-[#F3F3F3]"
+              className={[
+                "relative overflow-hidden bg-[#F3F3F3]",
+                isTabletWorkRow && openProjectId !== project.id ? "h-[95px]" : "",
+              ].join(" ")}
             >
               {(() => {
-                const mobileThumbStyle =
-                  project.id === "airdrop"
-                    ? { left: "calc(58.33% + 4.5px)", top: 0, width: 136, height: 95 }
+                const mobileThumbStyle = isTabletPortrait
+                  ? project.id === "airdrop"
+                    ? { left: "calc(75% + 17px)", top: 0, width: 136, height: 95 }
                     : project.id === "lootbox"
-                      ? { left: "calc(66.67% - 16px)", top: 3, width: 137, height: 90 }
-                      : { left: "calc(66.67% - 10px)", top: 4, width: 137, height: 88 };
-                const mobileUnderlineStyle =
-                  project.id === "airdrop"
-                    ? { left: "calc(33.33% + 6px)" }
+                      ? { left: "calc(58.33% + 18px)", top: 3, width: 137, height: 90 }
+                      : { left: "calc(41.67% + 42px)", top: 4, width: 137, height: 88 }
+                  : isTabletLandscape
+                    ? project.id === "airdrop"
+                      ? { left: "calc(83.33% - 6.33px)", top: 0, width: 136, height: 95 }
+                      : project.id === "lootbox"
+                        ? { left: "calc(58.33% + 57.67px)", top: 3, width: 137, height: 90 }
+                        : { left: "calc(41.67% + 42.33px)", top: 4, width: 137, height: 88 }
+                    : project.id === "airdrop"
+                      ? { left: "calc(58.33% + 4.5px)", top: 0, width: 136, height: 95 }
+                      : project.id === "lootbox"
+                        ? { left: "calc(66.67% - 16px)", top: 3, width: 137, height: 90 }
+                        : { left: "calc(66.67% - 10px)", top: 4, width: 137, height: 88 };
+                const mobileUnderlineStyle = isTabletPortrait
+                  ? project.id === "airdrop"
+                    ? { left: "calc(16.67% + 31px)" }
                     : project.id === "lootbox"
-                      ? { left: "calc(41.67% + 18.5px)" }
-                      : { left: "calc(33.33% + 19px)" };
+                      ? { left: "calc(25% + 12px)" }
+                      : { left: "calc(16.67% + 44px)" }
+                  : isTabletLandscape
+                    ? project.id === "airdrop"
+                      ? { left: "calc(8.33% + 73.67px)" }
+                      : project.id === "lootbox"
+                        ? { left: "calc(16.67% + 33.33px)" }
+                        : { left: "calc(8.33% + 86.67px)" }
+                    : project.id === "airdrop"
+                      ? { left: "calc(33.33% + 6px)" }
+                      : project.id === "lootbox"
+                        ? { left: "calc(41.67% + 18.5px)" }
+                        : { left: "calc(33.33% + 19px)" };
                 return (
               <button
                 type="button"
@@ -402,30 +452,38 @@ export function WorkSection() {
               >
                 <div className="relative h-[95px]">
                 <span
-                  className="absolute left-[16px] top-[31px] -translate-y-1/2 font-sans text-[14px] leading-[20px] text-[#181818]"
+                  className={
+                    isTabletWorkRow
+                      ? "absolute left-[39px] top-[31px] -translate-y-1/2 font-sans text-[14px] leading-[20px] text-[#181818]"
+                      : "absolute left-[16px] top-[31px] -translate-y-1/2 font-sans text-[14px] leading-[20px] text-[#181818]"
+                  }
                   style={openProjectId === project.id ? { fontWeight: 800 } : undefined}
                 >
                   {project.index}
                 </span>
                 <span
-                  className="absolute left-[35px] top-[55.5px] -translate-y-1/2 whitespace-nowrap text-[25px] font-bold leading-[68.26px] tracking-[-0.575px] text-[#181818]"
+                  className={
+                    isTabletWorkRow
+                      ? "absolute left-[58px] top-[55.5px] -translate-y-1/2 whitespace-nowrap text-[25px] font-bold leading-[68.26px] tracking-[-0.575px] text-[#181818]"
+                      : "absolute left-[35px] top-[55.5px] -translate-y-1/2 whitespace-nowrap text-[25px] font-bold leading-[68.26px] tracking-[-0.575px] text-[#181818]"
+                  }
                   style={{ fontFamily: "var(--font-nav)" }}
                 >
                   {project.title}
                 </span>
                 {openProjectId !== project.id ? (
-                  <span className="absolute top-[77px] h-px w-[61px] bg-[#181818]" style={mobileUnderlineStyle} />
-                ) : null}
-                {openProjectId !== project.id ? (
-                  <div className="absolute overflow-hidden" style={mobileThumbStyle}>
-                    <Image
-                      src={project.imageSrc}
-                      alt=""
-                      fill
-                      className={project.id === activeId ? "object-cover" : "object-cover grayscale"}
-                      sizes="(max-width:1023px) 137px, 137px"
-                    />
-                  </div>
+                  <>
+                    <span className="absolute top-[77px] h-px w-[61px] bg-[#181818]" style={mobileUnderlineStyle} />
+                    <div className="absolute overflow-hidden" style={mobileThumbStyle}>
+                      <Image
+                        src={project.imageSrc}
+                        alt=""
+                        fill
+                        className={project.id === activeId ? "object-cover" : "object-cover grayscale"}
+                        sizes="(max-width:1279px) 137px, 137px"
+                      />
+                    </div>
+                  </>
                 ) : null}
                 </div>
               </button>
@@ -439,22 +497,82 @@ export function WorkSection() {
                     animate={{ opacity: 1, height: "auto", y: 0 }}
                     exit={{ opacity: 0, height: 0, y: -6 }}
                     transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-                    className="px-0 pb-5"
+                    className={
+                      isTabletPortrait
+                        ? "relative w-full overflow-hidden px-0 pb-6 pt-0"
+                        : isTabletLandscape
+                          ? "relative px-0 pb-0 pt-0"
+                          : "px-0 pb-5"
+                    }
                   >
-                    <div className="h-px bg-[#181818]" />
-                    <div className="px-4 pt-3">
-                      <p className="whitespace-pre-line font-sans text-[14px] leading-[1.5] text-[#181818]">
-                        {project.description.join("\n\n")}
-                      </p>
-                    </div>
-                    <div
-                      className={[
-                        "mt-4 w-full overflow-hidden bg-black",
-                        project.id === "airdrop" ? "h-[250px]" : "h-[190px]",
-                      ].join(" ")}
-                    >
-                      <video className="h-full w-full object-cover" src={project.videoSrc} autoPlay muted loop playsInline />
-                    </div>
+                    {!isTabletPortrait ? <div className="h-px bg-[#181818]" /> : null}
+                    {isTabletPortrait ? (
+                      <div className="relative w-full">
+                        {/* Заголовок и номер уже в строке 95px выше — как единый заголовок кейса, без дубля из Figma. */}
+                        <div className="mx-auto mt-3 h-px w-[689px] max-w-[min(689px,calc(100%-78px))] bg-[#181818]" />
+                        <div className="mt-6 px-[30px]">
+                          <p className="max-w-[357px] whitespace-pre-line font-sans text-[14px] leading-[1.5] tracking-[-0.322px] text-[#181818]">
+                            {project.description.join("\n\n")}
+                          </p>
+                        </div>
+                        {/* Тот же px, что у описания — иначе чёрный блок визуально «уезжает» вправо (раньше было 40px при 30px у текста). */}
+                        <div className="mt-10 px-[30px]">
+                          <div
+                            className="relative mr-auto overflow-hidden bg-black"
+                            style={
+                              project.id === "airdrop"
+                                ? { width: 390, height: 250, maxWidth: "min(100%,390px)" }
+                                : project.id === "lootbox"
+                                  ? { width: 393, height: 192, maxWidth: "min(100%,393px)" }
+                                  : { width: 390, height: 190, maxWidth: "min(100%,390px)" }
+                            }
+                          >
+                            <video
+                              className={
+                                project.id === "airdrop"
+                                  ? "block h-full w-full object-contain object-[left_top]"
+                                  : "h-full w-full object-cover"
+                              }
+                              src={project.videoSrc}
+                              autoPlay
+                              muted
+                              loop
+                              playsInline
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ) : isTabletLandscape ? (
+                      <div className={project.id === "airdrop" ? "relative h-[285px] w-full" : "relative h-[248px] w-full"}>
+                        <div className={project.id === "airdrop" ? "px-[39px] pt-[12px] pr-[560px]" : "px-[39px] pt-[12px] pr-[560px]"}>
+                          <p className="whitespace-pre-line font-sans text-[14px] leading-[1.5] text-[#181818]">
+                            {project.description.join("\n\n")}
+                          </p>
+                        </div>
+                        <div
+                          className="absolute right-[39px] top-[12px] overflow-hidden bg-black"
+                          style={project.id === "airdrop" ? { width: 460, height: 260 } : { width: 460, height: 223 }}
+                        >
+                          <video className="h-full w-full object-cover" src={project.videoSrc} autoPlay muted loop playsInline />
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="px-4 pt-3">
+                          <p className="whitespace-pre-line font-sans text-[14px] leading-[1.5] text-[#181818]">
+                            {project.description.join("\n\n")}
+                          </p>
+                        </div>
+                        <div
+                          className={[
+                            "mt-4 w-full overflow-hidden bg-black",
+                            project.id === "airdrop" ? "h-[250px]" : "h-[190px]",
+                          ].join(" ")}
+                        >
+                          <video className="h-full w-full object-cover" src={project.videoSrc} autoPlay muted loop playsInline />
+                        </div>
+                      </>
+                    )}
                   </motion.div>
                 ) : null}
               </AnimatePresence>
@@ -462,6 +580,7 @@ export function WorkSection() {
           ))}
         </div>
       </div>
+
     </section>
   );
 }

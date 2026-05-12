@@ -2,15 +2,17 @@
 
 import Image from "next/image";
 import { useWideDesktop } from "@/lib/useWideDesktop";
+import { useTabletLandscape } from "@/lib/useTabletLandscape";
 
 export function Footer() {
   const isWide = useWideDesktop();
+  const isTabletLandscape = useTabletLandscape();
   return (
     <footer
       className="relative mx-auto w-full bg-[#F3F3F3] px-[10px] pb-8 text-[#181818] lg:h-[268px] lg:snap-start lg:pb-0"
       style={{ maxWidth: isWide ? 1360 : 1440 }}
     >
-      <div className={["relative hidden h-full w-full lg:block", isWide ? "overflow-visible" : ""].join(" ")}>
+      <div className={["relative hidden h-full w-full lg:block", isWide ? "overflow-visible" : "", isTabletLandscape ? "lg:hidden" : ""].join(" ")}>
         <div className="absolute h-[174px] w-[268px]" style={{ left: isWide ? -240 : 0, top: 7 }}>
           <Image src="/figma/logo.png" alt="NICO studio" fill className="object-contain" priority />
         </div>
@@ -56,7 +58,7 @@ export function Footer() {
           </p>
         </div>
       </div>
-      <div className="flex flex-col items-center pt-6 text-center lg:hidden">
+      <div className={["flex flex-col items-center pt-0 text-center", isTabletLandscape ? "block" : "lg:hidden"].join(" ")}>
         <div className="relative h-[72px] w-[111px]">
           <Image src="/figma/logo.png" alt="NICO studio" fill className="object-contain" />
         </div>

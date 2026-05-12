@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { characters } from "@/lib/characters";
 import { useScrollSteps } from "@/lib/useScrollSteps";
+import { useTabletLandscape, useTabletPortrait } from "@/lib/useTabletLandscape";
 import { CharacterStage } from "@/components/CharacterStage";
 import { Header } from "@/components/Header";
 
@@ -20,6 +21,8 @@ function hexToRgb(hex: string) {
 export function HeroScroller() {
   const [isDesktop, setIsDesktop] = useState(false);
   const [isWide, setIsWide] = useState(false);
+  const isTabletLandscape = useTabletLandscape();
+  const isTabletPortrait = useTabletPortrait();
   const [mobileIndex, setMobileIndex] = useState(0);
   const sectionRef = useRef<HTMLElement | null>(null);
   const { activeIndex: scrollIndex, reduceMotion } = useScrollSteps({
@@ -77,7 +80,7 @@ export function HeroScroller() {
     }
   }, [accent, accentRgb]);
 
-  const desktopLayout = isWide ? "wide" : "standard";
+  const desktopLayout = isWide ? "wide" : isTabletLandscape ? "tablet" : "standard";
 
   return (
     <section
@@ -97,7 +100,9 @@ export function HeroScroller() {
             : "flex min-h-[100svh] min-w-0 flex-col bg-[#F3F3F3]"
         }
       >
-        <Header maxWidthPx={isWide ? 1920 : 1440} />
+        <Header
+          maxWidthPx={isWide ? 1920 : isTabletLandscape ? 1024 : isTabletPortrait ? 768 : 1440}
+        />
 
         <div className="relative z-10 flex min-h-0 min-w-0 w-full flex-1 flex-col lg:min-h-0">
           <CharacterStage

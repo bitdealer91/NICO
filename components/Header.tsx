@@ -13,6 +13,11 @@ function isDesktopViewport() {
   return window.matchMedia?.("(min-width: 1024px)")?.matches ?? false;
 }
 
+function isTabletViewport() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia?.("(min-width: 1024px) and (max-width: 1279px)")?.matches ?? false;
+}
+
 function openWorkFirstCase() {
   if (typeof window === "undefined") return;
   const w = window as Window & { __nicoOpenWorkFirstCase?: boolean };
@@ -27,6 +32,7 @@ export function Header({ maxWidthPx = 1440 }: { maxWidthPx?: number }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navScrollOffsets = {
     desktop: 220,
+    tablet: 110,
     mobile: 16,
   } as const;
 
@@ -65,12 +71,18 @@ export function Header({ maxWidthPx = 1440 }: { maxWidthPx?: number }) {
     el: HTMLElement | null,
     options?: {
       desktopOffset?: number;
+      tabletOffset?: number;
       mobileOffset?: number;
     }
   ) {
     if (!el) return;
     const isDesktop = isDesktopViewport();
-    const offset = isDesktop ? (options?.desktopOffset ?? 0) : (options?.mobileOffset ?? 0);
+    const isTablet = isTabletViewport();
+    const offset = isTablet
+      ? (options?.tabletOffset ?? navScrollOffsets.tablet)
+      : isDesktop
+        ? (options?.desktopOffset ?? 0)
+        : (options?.mobileOffset ?? 0);
     if (offset === 0) {
       el.scrollIntoView({ behavior: "auto", block: "start" });
       return;
@@ -81,10 +93,13 @@ export function Header({ maxWidthPx = 1440 }: { maxWidthPx?: number }) {
 
   function scrollTo(id: SectionId) {
     const isDesktop = isDesktopViewport();
+    const isTablet = isTabletViewport();
 
     if (id === "work") {
-      const firstCaseAnchorId = isDesktop ? "work-case-first-desktop" : "work-case-first-mobile";
-      const sectionAnchorId = isDesktop ? "work-nav-anchor-desktop" : "work-nav-anchor-mobile";
+      /** На tablet (1024–1279) в DOM видна только mobile/tablet ветка WORK с якорями `*-mobile`. */
+      const useDesktopWorkAnchors = isDesktop && !isTablet;
+      const firstCaseAnchorId = useDesktopWorkAnchors ? "work-case-first-desktop" : "work-case-first-mobile";
+      const sectionAnchorId = useDesktopWorkAnchors ? "work-nav-anchor-desktop" : "work-nav-anchor-mobile";
       openWorkFirstCase();
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -94,6 +109,7 @@ export function Header({ maxWidthPx = 1440 }: { maxWidthPx?: number }) {
               document.getElementById("work"),
             {
               desktopOffset: navScrollOffsets.desktop,
+              tabletOffset: navScrollOffsets.tablet,
               mobileOffset: navScrollOffsets.mobile,
             }
           );
@@ -112,6 +128,7 @@ export function Header({ maxWidthPx = 1440 }: { maxWidthPx?: number }) {
 
     scrollToElement(document.getElementById(id), {
       desktopOffset: navScrollOffsets.desktop,
+      tabletOffset: id === "about" ? navScrollOffsets.mobile : navScrollOffsets.tablet,
       mobileOffset: navScrollOffsets.mobile,
     });
   }

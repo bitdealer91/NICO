@@ -4,6 +4,8 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import Image from "next/image";
 import { useId, useLayoutEffect, useRef, useState } from "react";
 import { useWideDesktop } from "@/lib/useWideDesktop";
+import { MOBILE_CURVED_MARQUEE_BAND_PX } from "@/lib/marquee";
+import { useTabletLandscape, useTabletPortrait } from "@/lib/useTabletLandscape";
 
 type Character = {
   id: "thinker" | "builder" | "creator" | "launcher";
@@ -102,11 +104,11 @@ function CurvedLoopText({ bandPx = 120, alpha = 0.1 }: { bandPx?: number; alpha?
   return (
     <div
       ref={hostRef}
-      className="pointer-events-none relative w-full min-w-0 max-w-full select-none"
+      className="pointer-events-none relative w-full min-w-0 max-w-full select-none overflow-visible"
       style={{ height: bandPx }}
       aria-hidden
     >
-      <svg viewBox={`0 0 ${vbW} ${vbH}`} className="h-full w-full" preserveAspectRatio="xMidYMid meet">
+      <svg viewBox={`0 0 ${vbW} ${vbH}`} className="h-full w-full overflow-visible" preserveAspectRatio="xMidYMid meet" overflow="visible">
         <defs>
           <path id={pathId} d={pathD} fill="none" />
         </defs>
@@ -191,15 +193,19 @@ function CharacterCard({ character }: { character: Character }) {
   );
 }
 
+
 const MARQUEE_OFFSET_TOP = 42;
 /** Короче полосы = меньше «пустого» места под кривой; иначе к margin суммируется и зазор кажется огромным. */
 const MARQUEE_BAND = 120;
 const MARQUEE_BLOCK = MARQUEE_OFFSET_TOP + MARQUEE_BAND;
 /** Отступ от низа блока с кривой до сетки карточек (десктоп). Не путать с 76px в Figma — там часто от базовой линии текста. */
 const MARQUEE_TO_CARDS_GAP_PX = 20;
-
 export function Sections() {
   const isWide = useWideDesktop();
+  const isTabletLandscape = useTabletLandscape();
+  const isTabletPortrait = useTabletPortrait();
+  /** Figma `833:218` — iPad portrait (820) lives here; landscape 1024–1279 uses same frame. */
+  const isTabletAbout = isTabletLandscape || isTabletPortrait;
   const reduceMotion = !!useReducedMotion();
   const aboutRef = useRef<HTMLElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -224,10 +230,10 @@ export function Sections() {
   const wideMarqueeHeight = useTransform(aboutScrollProgress, [0, 0.22, 0.38], [MARQUEE_BLOCK, MARQUEE_BLOCK, 0]);
   const mobileMarqueeOpacity = useTransform(mobileCardsProgress, [0, 0.85], [1, 0]);
   const mobileMarqueeY = useTransform(mobileCardsProgress, [0, 0.85], [0, reduceMotion ? 0 : -18]);
-  const mobileMarqueeHeight = useTransform(mobileCardsProgress, [0, 0.85], [50, 0]);
+  const mobileMarqueeHeight = useTransform(mobileCardsProgress, [0, 0.85], [MOBILE_CURVED_MARQUEE_BAND_PX, 0]);
 
   return (
-    <div className="relative z-10 overflow-hidden bg-[#F3F3F3] text-[#181818]">
+    <div className="relative z-10 overflow-visible bg-[#F3F3F3] text-[#181818]">
       <section ref={aboutRef} id="about" className="relative w-full flex-col pb-0 pt-10 lg:min-h-0 lg:snap-start lg:pb-0 lg:pt-14">
         {isWide ? (
           <div className="relative mx-auto hidden lg:block" style={{ height: 1150, width: 1920 }}>
@@ -293,7 +299,7 @@ export function Sections() {
           </div>
         ) : null}
         <div
-          className={["relative z-10 mx-auto hidden w-full flex-col lg:flex", isWide ? "lg:hidden" : ""].join(" ")}
+          className={["relative z-10 mx-auto hidden w-full flex-col lg:flex", isWide || isTabletLandscape ? "lg:hidden" : ""].join(" ")}
           style={{ maxWidth: isWide ? 1920 : 1440, paddingLeft: isWide ? 0 : 40, paddingRight: isWide ? 0 : 40 }}
         >
           {/* Figma: thinker decoration on the left, rotated right and partially clipped */}
@@ -349,7 +355,7 @@ export function Sections() {
         </div>
 
         <motion.div
-          className={["relative z-10 hidden w-full min-w-0 overflow-hidden will-change-transform lg:block", isWide ? "lg:hidden" : ""].join(" ")}
+          className={["relative z-10 hidden w-full min-w-0 overflow-hidden will-change-transform lg:block", isWide || isTabletLandscape ? "lg:hidden" : ""].join(" ")}
           style={{ height: marqueeHeight, opacity: marqueeOpacity, y: marqueeY }}
         >
           <div style={{ paddingTop: MARQUEE_OFFSET_TOP }}>
@@ -359,7 +365,7 @@ export function Sections() {
 
         <div
           ref={cardsRef}
-          className={["relative z-10 mx-auto hidden w-full lg:block", isWide ? "lg:hidden" : ""].join(" ")}
+          className={["relative z-10 mx-auto hidden w-full lg:block", isWide || isTabletLandscape ? "lg:hidden" : ""].join(" ")}
           style={{ maxWidth: isWide ? 1920 : 1520, marginTop: MARQUEE_TO_CARDS_GAP_PX, paddingLeft: isWide ? 0 : 40, paddingRight: isWide ? 0 : 40 }}
         >
           {/*
@@ -374,9 +380,22 @@ export function Sections() {
           </div>
         </div>
 
-        {/* Mobile layout (Figma 261:31) */}
-        <div className="relative z-10 px-4 pb-0 pt-2 lg:hidden">
-          <div className="pointer-events-none absolute -left-[76px] top-[-6px] h-[226px] w-[226px] rotate-90">
+        {/* Mobile layout (Figma 261:31) — tablet frame Figma `833:218` */}
+        <div
+          className={[
+            "relative z-10 pb-0 pt-2",
+            isTabletLandscape ? "block" : "lg:hidden",
+            isTabletAbout ? "min-h-[973px] px-0" : "px-4",
+          ].join(" ")}
+        >
+          <div
+            className="pointer-events-none absolute rotate-90 mix-blend-darken"
+            style={
+              isTabletAbout
+                ? { left: -95, top: -30, width: 517, height: 517 }
+                : { left: -76, top: -6, width: 226, height: 226 }
+            }
+          >
             <div className="relative isolate h-full w-full">
               <div className="pointer-events-none absolute inset-0 z-0 bg-[#F3F3F3]" aria-hidden />
               <video
@@ -391,23 +410,53 @@ export function Sections() {
           </div>
 
           <p
-            className="relative z-10 ml-[33%] mt-1 max-w-[63%] text-[25px] font-bold uppercase leading-[1.5] tracking-[-0.575px] text-[#181818]"
+            className={[
+              "z-10 font-bold uppercase text-[#181818]",
+              isTabletAbout
+                ? "absolute left-[calc(50%+19px)] top-[104px] z-10 w-[357px] max-w-[calc(100vw-48px)] -translate-y-1/2 text-left text-[25px] leading-[1.5] tracking-[-0.575px]"
+                : "relative ml-[33%] mt-1 max-w-[63%] text-[25px] leading-[1.5] tracking-[-0.575px]",
+            ].join(" ")}
             style={{ fontFamily: "var(--font-nav)" }}
           >
             NICO STUDIO IS THE LAUNCH CREW BEHIND MODERN DIGITAL PRODUCTS.
           </p>
-          <div className="relative z-10 mx-auto mt-5 w-full max-w-[calc(100vw-32px)] text-center font-sans text-[14px] leading-[1.5] tracking-[-0.322px] text-[#181818]">
+          <div
+            className={[
+              "z-10 font-sans text-[14px] leading-[1.5] tracking-[-0.322px] text-[#181818]",
+              isTabletAbout
+                ? "absolute left-[calc(50%+19px)] top-[289.5px] z-10 w-[357px] max-w-[calc(100vw-48px)] -translate-y-1/2 text-left"
+                : "relative mx-auto mt-5 w-full max-w-[calc(100vw-32px)] text-center",
+            ].join(" ")}
+          >
             <p>Founders bring the vision. We make it real.</p>
             <p className="mt-3">From strategy to design, from code to motion — we work as one team focused on one goal: launching products people want to use.</p>
             <p className="mt-3">No disconnected freelancers. No slow handoffs. Just one crew moving fast from idea to launch.</p>
             <p className="mt-3">Landing pages in days. Complex platforms built for long-term growth. Idea, design, or just a vision — NICO Studio becomes your launch team.</p>
           </div>
 
-          <motion.div className="mt-8 -mx-4 overflow-hidden" style={{ height: mobileMarqueeHeight, opacity: mobileMarqueeOpacity, y: mobileMarqueeY }}>
-            <CurvedLoopText bandPx={50} alpha={0.1} />
+          <motion.div
+            className={
+              isTabletAbout
+                ? "pointer-events-none absolute left-1/2 top-[460px] z-10 w-screen max-w-none -translate-x-1/2 -translate-y-1/2 overflow-visible"
+                : "mt-8 -mx-4 overflow-visible"
+            }
+            style={{
+              height: mobileMarqueeHeight,
+              opacity: mobileMarqueeOpacity,
+              y: mobileMarqueeY,
+            }}
+            aria-hidden
+          >
+            <CurvedLoopText bandPx={MOBILE_CURVED_MARQUEE_BAND_PX} alpha={0.1} />
           </motion.div>
 
-          <div ref={mobileCardsRef} className="mt-3 -mx-4 flex snap-x snap-mandatory gap-[10px] overflow-x-auto px-4 pb-2">
+          <div
+            ref={mobileCardsRef}
+            className={[
+              "-mx-4 flex snap-x snap-mandatory gap-[10px] overflow-x-auto px-4 pb-2",
+              isTabletAbout ? "mt-[487px]" : "mt-3",
+            ].join(" ")}
+          >
             {CHARACTERS.map((character) => {
               const layout = MOBILE_CARD_LAYOUT[character.id];
               return (
