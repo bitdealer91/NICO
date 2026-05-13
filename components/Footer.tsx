@@ -9,7 +9,10 @@ export function Footer() {
   const isTabletLandscape = useTabletLandscape();
   return (
     <footer
-      className="relative mx-auto w-full bg-[#F3F3F3] px-[10px] pb-8 text-[#181818] lg:h-[268px] lg:snap-start lg:pb-0"
+      className={[
+        "relative mx-auto w-full bg-[#F3F3F3] px-[10px] pb-8 text-[#181818] lg:h-[268px] lg:snap-start lg:pb-0",
+        isWide ? "" : "lg:px-[40px]",
+      ].join(" ")}
       style={{ maxWidth: isWide ? 1360 : 1440 }}
     >
       <div className={["relative hidden h-full w-full lg:block", isWide ? "overflow-visible" : "", isTabletLandscape ? "lg:hidden" : ""].join(" ")}>
